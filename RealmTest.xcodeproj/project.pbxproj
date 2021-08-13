@@ -13,6 +13,16 @@
 		C01291FC26C6620B003015A0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C01291FA26C6620B003015A0 /* Main.storyboard */; };
 		C01291FE26C6620C003015A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C01291FD26C6620C003015A0 /* Assets.xcassets */; };
 		C012920126C6620C003015A0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C01291FF26C6620C003015A0 /* LaunchScreen.storyboard */; };
+		C012920B26C6631F003015A0 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012920826C6631F003015A0 /* ChatMessage.swift */; };
+		C012920C26C6631F003015A0 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012920926C6631F003015A0 /* User.swift */; };
+		C012920D26C6631F003015A0 /* MessageRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012920A26C6631F003015A0 /* MessageRoom.swift */; };
+		C012921526C66354003015A0 /* RealService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012920E26C66354003015A0 /* RealService.swift */; };
+		C012921626C66354003015A0 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012920F26C66354003015A0 /* ChatViewController.swift */; };
+		C012921726C66354003015A0 /* ConversationsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921026C66354003015A0 /* ConversationsModels.swift */; };
+		C012921826C66354003015A0 /* ChatModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921126C66354003015A0 /* ChatModels.swift */; };
+		C012921926C66354003015A0 /* MockMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921226C66354003015A0 /* MockMessages.swift */; };
+		C012921A26C66354003015A0 /* PhotoViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921326C66354003015A0 /* PhotoViewerViewController.swift */; };
+		C012921B26C66354003015A0 /* XMPPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921426C66354003015A0 /* XMPPManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +34,16 @@
 		C01291FD26C6620C003015A0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C012920026C6620C003015A0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C012920226C6620C003015A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C012920826C6631F003015A0 /* ChatMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		C012920926C6631F003015A0 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		C012920A26C6631F003015A0 /* MessageRoom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRoom.swift; sourceTree = "<group>"; };
+		C012920E26C66354003015A0 /* RealService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealService.swift; sourceTree = "<group>"; };
+		C012920F26C66354003015A0 /* ChatViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
+		C012921026C66354003015A0 /* ConversationsModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationsModels.swift; sourceTree = "<group>"; };
+		C012921126C66354003015A0 /* ChatModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatModels.swift; sourceTree = "<group>"; };
+		C012921226C66354003015A0 /* MockMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockMessages.swift; sourceTree = "<group>"; };
+		C012921326C66354003015A0 /* PhotoViewerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewerViewController.swift; sourceTree = "<group>"; };
+		C012921426C66354003015A0 /* XMPPManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XMPPManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +79,16 @@
 				C01291F426C6620B003015A0 /* AppDelegate.swift */,
 				C01291F626C6620B003015A0 /* SceneDelegate.swift */,
 				C01291F826C6620B003015A0 /* ViewController.swift */,
+				C012920826C6631F003015A0 /* ChatMessage.swift */,
+				C012920A26C6631F003015A0 /* MessageRoom.swift */,
+				C012920926C6631F003015A0 /* User.swift */,
+				C012921126C66354003015A0 /* ChatModels.swift */,
+				C012920F26C66354003015A0 /* ChatViewController.swift */,
+				C012921026C66354003015A0 /* ConversationsModels.swift */,
+				C012921226C66354003015A0 /* MockMessages.swift */,
+				C012921326C66354003015A0 /* PhotoViewerViewController.swift */,
+				C012920E26C66354003015A0 /* RealService.swift */,
+				C012921426C66354003015A0 /* XMPPManager.swift */,
 				C01291FA26C6620B003015A0 /* Main.storyboard */,
 				C01291FD26C6620C003015A0 /* Assets.xcassets */,
 				C01291FF26C6620C003015A0 /* LaunchScreen.storyboard */,
@@ -137,8 +167,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C012920D26C6631F003015A0 /* MessageRoom.swift in Sources */,
+				C012921826C66354003015A0 /* ChatModels.swift in Sources */,
+				C012921926C66354003015A0 /* MockMessages.swift in Sources */,
+				C012921526C66354003015A0 /* RealService.swift in Sources */,
+				C012921626C66354003015A0 /* ChatViewController.swift in Sources */,
+				C012921A26C66354003015A0 /* PhotoViewerViewController.swift in Sources */,
+				C012921B26C66354003015A0 /* XMPPManager.swift in Sources */,
 				C01291F926C6620B003015A0 /* ViewController.swift in Sources */,
+				C012921726C66354003015A0 /* ConversationsModels.swift in Sources */,
+				C012920B26C6631F003015A0 /* ChatMessage.swift in Sources */,
 				C01291F526C6620B003015A0 /* AppDelegate.swift in Sources */,
+				C012920C26C6631F003015A0 /* User.swift in Sources */,
 				C01291F726C6620B003015A0 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
