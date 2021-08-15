@@ -57,6 +57,28 @@ public class XMPPManager: NSObject {
         msg.addBody(message)
         xmppStream.send(msg)
     }
+    
+    let dbService = DBService()
+    var currentRoom: Room?
+    var currentMessage = [ChatMessage]() {
+        didSet {
+            handleCurrentMessageChange()
+        }
+    }
+    
+    let maxCacheMessagesCount = 10
+    
+    private func handleCurrentMessageChange() {
+        if currentMessage.count < maxCacheMessagesCount {
+            return
+        }
+        flushMessages()
+    }
+    private func flushMessages() {
+        currentRoom.messages.append(currentMessage)
+        db.save(currentRoom)
+        currentMessage.removeAll()
+    }
 }
 
 extension XMPPManager: XMPPStreamDelegate {
@@ -71,6 +93,7 @@ extension XMPPManager: XMPPStreamDelegate {
     
     public func xmppStream(_ sender: XMPPStream, didReceive message: XMPPMessage) {
         print(message)
+        cachedMessage.append(message)
     }
     
     public func xmppStream(_ sender: XMPPStream, didReceive presence: XMPPPresence) {
