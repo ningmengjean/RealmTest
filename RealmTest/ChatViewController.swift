@@ -32,7 +32,11 @@ final class ChatViewController: MessagesViewController {
     private var conversationId: String?
     public var isNewConversation = false
 
-    private var messages = [Message]()
+    public var messages = [MessageType]() {
+        didSet {
+            //reloadData()
+        }
+    }
 
     private var selfSender: Sender? {
         guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
