@@ -7,6 +7,7 @@
 
 import Foundation
 import RealmSwift
+import MessageKit
 
 enum Presence: String {
     case onLine = "On-Line"
@@ -23,7 +24,7 @@ class User: Object {
     @Persisted var userName = ""
     @Persisted var email = ""
     @Persisted var present = "On-Line"
-    @Persisted var displayName: String?
+    @Persisted var displayName: String = ""
     @Persisted var avatarImage: String?
     
     convenience init(userName: String, email: String, displayName: String?, avatarImage: String?) {
@@ -31,7 +32,14 @@ class User: Object {
         self.userName = userName
         self.email = email
         self.present = present
-        self.displayName = displayName
+        self.displayName = displayName ?? ""
         self.avatarImage = avatarImage
+    }
+}
+
+
+extension User: SenderType {
+    var senderId: String {
+        return userName
     }
 }
