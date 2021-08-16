@@ -31,6 +31,8 @@ final class ChatViewController: MessagesViewController {
     public var receiverId: String
     private var conversationId: String?
     public var isNewConversation = false
+    public let realmService = RealmService.shared
+    public var realDataBase: RealmDataBase?
 
     public var messages = [MessageType]() {
         didSet {
@@ -164,29 +166,15 @@ final class ChatViewController: MessagesViewController {
     }
 
     private func listenForMessages(roomId: String, shouldScrollToBottom: Bool) {
-//        RealmService.shared.getAllMessagesForConversation(with: id, completion: { [weak self] result in
-//            switch result {
-//            case .success(let messages):
-//                print("success in getting messages: \(messages)")
-//                guard !messages.isEmpty else {
-//                    print("messages are empty")
-//                    return
-//                }
-//                self?.messages = messages
-//
-//                DispatchQueue.main.async {
-//                    self?.messagesCollectionView.reloadDataAndKeepOffset()
-//
-//                    if shouldScrollToBottom {
-//                        self?.messagesCollectionView.scrollToBottom()
-//                    }
-//                }
-//            case .failure(let error):
-//                print("failed to get messages: \(error)")
-//            }
-//        })
         let realmDataBase = RealmDataBase()
-        let messages = realmDataBase.getAllMessagesForSpeficMessageRoom(roomID: id)
+        let messages = realmDataBase.getAllMessagesForSpeficMessageRoom(roomID: roomId)
+        self.messages = messages
+        DispatchQueue.main.async {
+            self.messagesCollectionView.reloadDataAndKeepOffset()
+            if shouldScrollToBottom {
+                self.messagesCollectionView.scrollToLastItem()
+            }
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -328,20 +316,12 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
 
         // Send Message
         if isNewConversation {
-            // create convo in database
-            DatabaseManager.shared.createNewConversation(with: otherUserEmail, name: self.title ?? "User", firstMessage: mmessage, completion: { [weak self]success in
-                if success {
-                    print("message sent")
-                    self?.isNewConversation = false
-                    let newConversationId = "conversation_\(mmessage.messageId)"
-                    self?.conversationId = newConversationId
-                    self?.listenForMessages(id: newConversationId, shouldScrollToBottom: true)
-                    self?.messageInputBar.inputTextView.text = nil
-                }
-                else {
-                    print("faield ot send")
-                }
-            })
+            let realmDataBase = RealmDataBase()
+            guard let roomId = realmDataBase.creatNewMessageRoom(receiverId: self.receiverId) else { return }
+            self.isNewConversation = false
+            let room = realmService.object(MessageRoom.self)!.filter("roomId == 'roomId'")
+            self.listenForMessages(roomId: roomId, shouldScrollToBottom: true)
+            self.messageInputBar.inputTextView.text = nil
         }
         else {
             guard let conversationId = conversationId, let name = self.title else {

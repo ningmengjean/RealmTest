@@ -38,14 +38,14 @@ class RealmDataBase: NSObject {
         return messages ?? []
     }
     
-    public func creatNewMessageRoom(receiverId: String) -> MessageRoom? {
+    public func creatNewMessageRoom(receiverId: String) -> String? {
         guard let senderId = UserDefaults.standard.value(forKey: "userName") as? String else {
-            return nil 
+            return nil
         }
         let user1 = User(userName: senderId, email: senderId, displayName: senderId, avatarImage: nil)
         let user2 = User(userName: receiverId, email: receiverId, displayName: receiverId, avatarImage: nil)
         let room = MessageRoom(displayName: receiverId, timeStamp: Date(), users: [user1, user2], messages: [])
         realmService.saveObject(room)
-        return room
+        return room.id
     }
 }
