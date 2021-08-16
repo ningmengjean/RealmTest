@@ -10,18 +10,15 @@ import RealmSwift
 import MessageKit
 import Kingfisher
 
-extension String: SenderType {
-    public var senderId: String {
-        return self
-    }
-    
-    public var displayName: String {
-        return self
-
-    }
+enum Message_Kind: String, PersistableEnum {
+    case Text
+    case Photo
+    case Video
+    case File
+    case Emoji
 }
 
-class ChatMessage: Object {
+public class ChatMessage: Object {
     @Persisted (primaryKey: true) var _id = UUID().uuidString
     @Persisted var messageBody = ""
     @Persisted var messageKind = Message_Kind.Text
@@ -30,7 +27,7 @@ class ChatMessage: Object {
     @Persisted var senderID: String?
     @Persisted var receiverID: String?
   
-    override static func primaryKey() -> String? {
+    public override static func primaryKey() -> String? {
            return "_id"
     }
     
@@ -46,38 +43,39 @@ class ChatMessage: Object {
 }
 
 extension ChatMessage: MessageType {
-    var sender: SenderType {
+    public var sender: SenderType {
         return senderID ?? ""
     }
     
-    var messageId: String {
+    public var messageId: String {
         return _id
     }
     
-    var sentDate: Date {
+    public var sentDate: Date {
         return timeStamp
     }
     
-    var kind: MessageKind {
+    public var kind: MessageKind {
         switch messageKind {
         case .Text:
             return .text(messageBody)
         case .File:
-            return .linkPreview(messageBody)
+            return .linkPreview(messageBody as! LinkItem)
         case .Photo:
             return .photo(messageBody)
-        
+        case .Video:
+            return .video(messageBody)
+        case .Emoji:
+            return .emoji(messageBody)
         }
-        return .text(messageBody)
     }
 }
 
 
 extension String: MediaItem {
     
-    func toMediaItem(completion: @escaping (Result<MediaItem, Error>->Void) {
+    func toMediaItem(completion: @escaping (Result<MediaItem, Error>)->Void) {
         
-        return nil
     }
     public var url: URL? {
         return URL(string: self)
@@ -93,5 +91,15 @@ extension String: MediaItem {
     
     public var size: CGSize {
         return .zero
+    }
+}
+
+extension String: SenderType {
+    public var senderId: String {
+        return self
+    }
+    
+    public var displayName: String {
+        return self
     }
 }

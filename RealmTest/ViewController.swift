@@ -61,8 +61,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let JIDText = cell?.textLabel?.text
         xmppManager = try! XMPPManager(hostName: "localhost", userJIDString: JIDText!, password: "pass")
         xmppManager.connect()
-        xmppManager.sendMessage()
+        xmppManager.sendMessage(message: <#ChatMessage#>)
+        UserDefaults.setValue("user4", forKey: "email")
         let vc = ChatViewController(with: "user5@localhost", id: messageRoomID(users: users))
+        vc.receiverId = JIDText!
         self.navigationController?.pushViewController(vc, animated: true)
     }
 }

@@ -8,14 +8,6 @@
 import Foundation
 import RealmSwift
 
-enum Message_Kind: String, PersistableEnum {
-    case Text
-    case Photo
-    case Video
-    case File
-    case Emoji
-}
-
 class MessageRoom: Object {
     @Persisted (primaryKey: true) var id = ""
     @Persisted var displayName = ""

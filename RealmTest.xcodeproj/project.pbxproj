@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -25,6 +25,7 @@
 		C012921926C66354003015A0 /* MockMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921226C66354003015A0 /* MockMessages.swift */; };
 		C012921A26C66354003015A0 /* PhotoViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921326C66354003015A0 /* PhotoViewerViewController.swift */; };
 		C012921B26C66354003015A0 /* XMPPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921426C66354003015A0 /* XMPPManager.swift */; };
+		C03C353126CA32C100177866 /* RealmDataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03C353026CA32C100177866 /* RealmDataBase.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 		C012921226C66354003015A0 /* MockMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockMessages.swift; sourceTree = "<group>"; };
 		C012921326C66354003015A0 /* PhotoViewerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewerViewController.swift; sourceTree = "<group>"; };
 		C012921426C66354003015A0 /* XMPPManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XMPPManager.swift; sourceTree = "<group>"; };
+		C03C353026CA32C100177866 /* RealmDataBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmDataBase.swift; sourceTree = "<group>"; };
 		D28855CA85CC6FCAF868E36B /* Pods_RealmTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RealmTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -98,6 +100,7 @@
 				C012921226C66354003015A0 /* MockMessages.swift */,
 				C012921326C66354003015A0 /* PhotoViewerViewController.swift */,
 				C012920E26C66354003015A0 /* RealService.swift */,
+				C03C353026CA32C100177866 /* RealmDataBase.swift */,
 				C012921426C66354003015A0 /* XMPPManager.swift */,
 				C01291FA26C6620B003015A0 /* Main.storyboard */,
 				C01291FD26C6620C003015A0 /* Assets.xcassets */,
@@ -121,7 +124,6 @@
 				0FA83136867C38929CEC73AA /* Pods-RealmTest.debug.xcconfig */,
 				95580976E99D808EF4BC9730 /* Pods-RealmTest.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -242,6 +244,7 @@
 			files = (
 				C012920D26C6631F003015A0 /* MessageRoom.swift in Sources */,
 				C012921826C66354003015A0 /* ChatModels.swift in Sources */,
+				C03C353126CA32C100177866 /* RealmDataBase.swift in Sources */,
 				C012921926C66354003015A0 /* MockMessages.swift in Sources */,
 				C012921526C66354003015A0 /* RealService.swift in Sources */,
 				C012921626C66354003015A0 /* ChatViewController.swift in Sources */,

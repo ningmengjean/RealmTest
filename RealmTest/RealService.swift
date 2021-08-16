@@ -81,7 +81,6 @@ class RealmService: NSObject {
     func stopObservingErrors(in vc: UIViewController) {
         NotificationCenter.default.removeObserver(vc, name: NSNotification.Name("RealmError"), object: nil)
     }
-    
 }
 
 extension Results {
@@ -92,7 +91,6 @@ extension Results {
                 array.append(result)
             }
         }
-        
         return array
     }
 }

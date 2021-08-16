@@ -1,4 +1,4 @@
-//
+  //
 //  ChatViewController.swift
 //  Messenger
 //
@@ -28,7 +28,7 @@ final class ChatViewController: MessagesViewController {
         return formattre
     }()
 
-    public let otherUserEmail: String
+    public var receiverId: String
     private var conversationId: String?
     public var isNewConversation = false
 
@@ -51,7 +51,7 @@ final class ChatViewController: MessagesViewController {
 
     init(with email: String, id: String?) {
         self.conversationId = id
-        self.otherUserEmail = email
+        self.receiverId = email
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -163,35 +163,37 @@ final class ChatViewController: MessagesViewController {
         present(actionSheet, animated: true)
     }
 
-    private func listenForMessages(id: String, shouldScrollToBottom: Bool) {
-        DatabaseManager.shared.getAllMessagesForConversation(with: id, completion: { [weak self] result in
-            switch result {
-            case .success(let messages):
-                print("success in getting messages: \(messages)")
-                guard !messages.isEmpty else {
-                    print("messages are empty")
-                    return
-                }
-                self?.messages = messages
-
-                DispatchQueue.main.async {
-                    self?.messagesCollectionView.reloadDataAndKeepOffset()
-
-                    if shouldScrollToBottom {
-                        self?.messagesCollectionView.scrollToBottom()
-                    }
-                }
-            case .failure(let error):
-                print("failed to get messages: \(error)")
-            }
-        })
+    private func listenForMessages(roomId: String, shouldScrollToBottom: Bool) {
+//        RealmService.shared.getAllMessagesForConversation(with: id, completion: { [weak self] result in
+//            switch result {
+//            case .success(let messages):
+//                print("success in getting messages: \(messages)")
+//                guard !messages.isEmpty else {
+//                    print("messages are empty")
+//                    return
+//                }
+//                self?.messages = messages
+//
+//                DispatchQueue.main.async {
+//                    self?.messagesCollectionView.reloadDataAndKeepOffset()
+//
+//                    if shouldScrollToBottom {
+//                        self?.messagesCollectionView.scrollToBottom()
+//                    }
+//                }
+//            case .failure(let error):
+//                print("failed to get messages: \(error)")
+//            }
+//        })
+        let realmDataBase = RealmDataBase()
+        let messages = realmDataBase.getAllMessagesForSpeficMessageRoom(roomID: id)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         messageInputBar.inputTextView.becomeFirstResponder()
         if let conversationId = conversationId {
-            listenForMessages(id: conversationId, shouldScrollToBottom: true)
+            listenForMessages(roomId: conversationId, shouldScrollToBottom: true)
         }
     }
 
@@ -368,7 +370,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
         let safeCurrentEmail = DatabaseManager.safeEmail(emailAddress: currentUserEmail)
 
         let dateString = Self.dateFormatter.string(from: Date())
-        let newIdentifier = "\(otherUserEmail)_\(safeCurrentEmail)_\(dateString)"
+        let newIdentifier = "\(receiverId)_\(safeCurrentEmail)_\(dateString)"
 
         print("created message id: \(newIdentifier)")
 
@@ -470,7 +472,7 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
             }
             else {
                 // fetch url
-                let email = self.otherUserEmail
+                let email = self.receiverId
 
                 let safeEmail = DatabaseManager.safeEmail(emailAddress: email)
                 let path = "images/\(safeEmail)_profile_picture.png"

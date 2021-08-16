@@ -37,7 +37,6 @@ class User: Object {
     }
 }
 
-
 extension User: SenderType {
     var senderId: String {
         return userName

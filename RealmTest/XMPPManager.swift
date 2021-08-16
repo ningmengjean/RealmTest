@@ -7,6 +7,7 @@
 
 import Foundation
 import XMPPFramework
+import RealmSwift
 
 public enum XMPPManagerError: Error {
     case wrongUserJID
@@ -18,6 +19,7 @@ public class XMPPManager: NSObject {
     public let userJID: XMPPJID
     public let hostPort: UInt16
     public let password: String
+    private let realmDataBase: RealmDataBase?
 
     public init(hostName: String, userJIDString: String, hostPort: UInt16 = 5222, password: String) throws {
         guard let userJID = XMPPJID(string: userJIDString) else {
@@ -40,7 +42,6 @@ public class XMPPManager: NSObject {
         self.xmppStream.addDelegate(self, delegateQueue: DispatchQueue.main)
     }
 
-    
     public func connect() {
         if !self.xmppStream.isDisconnected {
             return
@@ -49,36 +50,15 @@ public class XMPPManager: NSObject {
         print(self.xmppStream.isConnected)
     }
     
-    public func sendMessage() {
-        let message = "Yo!"
+    public func sendMessage(message: ChatMessage) {
+        let message = message
         let senderJID = XMPPJID(string: "user5@localhost")
         let msg = XMPPMessage(type: "chat", to: senderJID)
-        
-        msg.addBody(message)
+        msg.addBody(message.messageBody)
         xmppStream.send(msg)
     }
     
-    let dbService = DBService()
-    var currentRoom: Room?
-    var currentMessage = [ChatMessage]() {
-        didSet {
-            handleCurrentMessageChange()
-        }
-    }
     
-    let maxCacheMessagesCount = 10
-    
-    private func handleCurrentMessageChange() {
-        if currentMessage.count < maxCacheMessagesCount {
-            return
-        }
-        flushMessages()
-    }
-    private func flushMessages() {
-        currentRoom.messages.append(currentMessage)
-        db.save(currentRoom)
-        currentMessage.removeAll()
-    }
 }
 
 extension XMPPManager: XMPPStreamDelegate {
@@ -93,7 +73,10 @@ extension XMPPManager: XMPPStreamDelegate {
     
     public func xmppStream(_ sender: XMPPStream, didReceive message: XMPPMessage) {
         print(message)
-        cachedMessage.append(message)
+        let realmDataBase = RealmDataBase()
+        guard let messageBody = message.body else { return }
+        let message = ChatMessage(messageBody: messageBody, messageKind: Message_Kind(rawValue: message.type!) ?? .Text, timeStamp: Date(), partition: "user4@localhost.user5@localhost", senderID: message.fromStr, receiverID: message.toStr)
+        realmDataBase.currentMessage.append(message)
     }
     
     public func xmppStream(_ sender: XMPPStream, didReceive presence: XMPPPresence) {
@@ -103,6 +86,7 @@ extension XMPPManager: XMPPStreamDelegate {
     public func xmppStreamDidAuthenticate(_ sender: XMPPStream) {
         self.xmppStream.send(XMPPPresence())
         print("Stream: Authenticated")
-        sendMessage()
+        let message = ChatMessage(messageBody: "Yo", messageKind: .Text, timeStamp: Date(), partition: "user4@localhost.user5@localhost", senderID: "user4", receiverID: "user5")
+        sendMessage(message: message)
     }
 }
