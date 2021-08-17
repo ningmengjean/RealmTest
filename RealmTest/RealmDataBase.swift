@@ -41,9 +41,12 @@ class RealmDataBase: NSObject {
     }
     
     public func getAllMessagesForSpeficMessageRoom(roomID: String) -> [ChatMessage] {
-        let room = realmService.object(MessageRoom.self)?.filter("roomId == 'roomID'")
-        let messages = room?.toArray(ofType: ChatMessage.self)
-        return messages ?? []
+        let room = realmService.object(MessageRoom.self)?.filter("roomId = @%", roomID)[0]
+        if let room = room {
+            let messages = Array(room.messages)
+            return messages
+        }
+        return []
     }
     
     public func creatNewMessageRoom(senderId: String, receiverId: String) -> String? {

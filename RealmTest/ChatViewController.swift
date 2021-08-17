@@ -162,7 +162,7 @@ final class ChatViewController: MessagesViewController {
     }
 
     private func listenForMessages(roomId: String, shouldScrollToBottom: Bool) {
-        let realmDataBase = RealmDataBase()
+        let realmDataBase = RealmDataBase(senderId: self.senderId, receiverId: self.receiverId, roomId: self.roomId)
         let messages = realmDataBase.getAllMessagesForSpeficMessageRoom(roomID: roomId)
         self.messages = messages
         DispatchQueue.main.async {
@@ -176,11 +176,8 @@ final class ChatViewController: MessagesViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         messageInputBar.inputTextView.becomeFirstResponder()
-        if let conversationId = roomId {
-            listenForMessages(roomId: conversationId, shouldScrollToBottom: true)
-        }
+        listenForMessages(roomId: roomId, shouldScrollToBottom: true)
     }
-
 }
 
 extension ChatViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -192,7 +189,6 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true, completion: nil)
         guard let messageId = createMessageId(),
-            let conversationId = roomId,
             let name = self.title,
             let selfSender = selfSender else {
                 return
@@ -297,59 +293,32 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
 extension ChatViewController: InputBarAccessoryViewDelegate {
 
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
-        guard !text.replacingOccurrences(of: " ", with: "").isEmpty,
-            let selfSender = self.selfSender,
-            let messageId = createMessageId() else {
+        guard !text.replacingOccurrences(of: " ", with: "").isEmpty else {
                 return
         }
-
+        let realmDataBase = RealmDataBase(senderId: self.senderId, receiverId: self.receiverId, roomId: self.roomId)
         print("Sending: \(text)")
-
-        let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderID: <#T##String?#>, receiverID: <#T##String?#>)
-
+        let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderID: self.senderId, receiverID: self.receiverId)
+        
         // Send Message
         if isNewConversation {
-            let realmDataBase = RealmDataBase()
-            guard let roomId = realmDataBase.creatNewMessageRoom(receiverId: self.receiverId) else { return }
+            guard let roomId = realmDataBase.creatNewMessageRoom(senderId: self.senderId, receiverId: self.receiverId) else { return }
             self.isNewConversation = false
-            let room = realmService.object(MessageRoom.self)!.filter("roomId == 'roomId'")
-            self.listenForMessages(roomId: roomId, shouldScrollToBottom: true)
+            let room = realmService.object(MessageRoom.self)!.filter("roomId = @%", roomId)[0]
+            room.messages.append(newMessage)
+            realmService.saveObject(room)
+            self.listenForMessages(roomId: room.id, shouldScrollToBottom: true)
             self.messageInputBar.inputTextView.text = nil
         }
         else {
-            guard let conversationId = roomId, let name = self.title else {
-                return
-            }
-
             // append to existing conversation data
-            DatabaseManager.shared.sendMessage(to: conversationId, otherUserEmail: otherUserEmail, name: name, newMessage: newMessage, completion: { [weak self] success in
-                if success {
-                    self?.messageInputBar.inputTextView.text = nil
-                    print("message sent")
-                }
-                else {
-                    print("failed to send")
-                }
-            })
+            var oldMessages = realmDataBase.getAllMessagesForSpeficMessageRoom(roomID: roomId)
+            var newMessageArray = oldMessages.append(newMessage)
+            self.messages = newMessageArray 
+            self.listenForMessages(roomId: roomId, shouldScrollToBottom: true)
+            self.messageInputBar.inputTextView.text = nil
         }
     }
-
-    private func createMessageId() -> String? {
-        // date, otherUesrEmail, senderEmail, randomInt
-        guard let currentUserEmail = UserDefaults.standard.value(forKey: "email") as? String else {
-            return nil
-        }
-
-        let safeCurrentEmail = DatabaseManager.safeEmail(emailAddress: currentUserEmail)
-
-        let dateString = Self.dateFormatter.string(from: Date())
-        let newIdentifier = "\(receiverId)_\(safeCurrentEmail)_\(dateString)"
-
-        print("created message id: \(newIdentifier)")
-
-        return newIdentifier
-    }
-
 }
 
 extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
