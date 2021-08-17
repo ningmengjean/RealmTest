@@ -9,6 +9,10 @@ import Foundation
 import XMPPFramework
 import RealmSwift
 
+public protocol XMPPDelegate: AnyObject {
+    func receivedMessage(message: XMPPMessage)
+}
+
 public enum XMPPManagerError: Error {
     case wrongUserJID
 }
@@ -20,12 +24,12 @@ public class XMPPManager: NSObject {
     public let hostPort: UInt16
     public let password: String
     private let realmDataBase: RealmDataBase?
+    public weak var delegate: XMPPDelegate?
 
     public init(hostName: String, userJIDString: String, hostPort: UInt16 = 5222, password: String) throws {
         guard let userJID = XMPPJID(string: userJIDString) else {
             throw XMPPManagerError.wrongUserJID
         }
-
         self.hostName = hostName
         self.userJID = userJID
         self.hostPort = hostPort
@@ -57,8 +61,6 @@ public class XMPPManager: NSObject {
         msg.addBody(message.messageBody)
         xmppStream.send(msg)
     }
-    
-    
 }
 
 extension XMPPManager: XMPPStreamDelegate {
@@ -73,10 +75,7 @@ extension XMPPManager: XMPPStreamDelegate {
     
     public func xmppStream(_ sender: XMPPStream, didReceive message: XMPPMessage) {
         print(message)
-        let realmDataBase = RealmDataBase()
-        guard let messageBody = message.body else { return }
-        let message = ChatMessage(messageBody: messageBody, messageKind: Message_Kind(rawValue: message.type!) ?? .Text, timeStamp: Date(), partition: "user4@localhost.user5@localhost", senderID: message.fromStr, receiverID: message.toStr)
-        realmDataBase.currentMessage.append(message)
+        delegate?.receivedMessage(message: message)
     }
     
     public func xmppStream(_ sender: XMPPStream, didReceive presence: XMPPPresence) {
@@ -86,7 +85,7 @@ extension XMPPManager: XMPPStreamDelegate {
     public func xmppStreamDidAuthenticate(_ sender: XMPPStream) {
         self.xmppStream.send(XMPPPresence())
         print("Stream: Authenticated")
-        let message = ChatMessage(messageBody: "Yo", messageKind: .Text, timeStamp: Date(), partition: "user4@localhost.user5@localhost", senderID: "user4", receiverID: "user5")
+        let message = ChatMessage(messageBody: "Yo", messageKind: .Text, timeStamp: Date(),senderID: "user4", receiverID: "user5")
         sendMessage(message: message)
     }
 }

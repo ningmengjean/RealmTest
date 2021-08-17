@@ -14,7 +14,6 @@ import AVKit
 import Kingfisher
 import CoreLocation
 
-
 final class ChatViewController: MessagesViewController {
 
     private var senderPhotoURL: URL?
@@ -29,7 +28,8 @@ final class ChatViewController: MessagesViewController {
     }()
 
     public var receiverId: String
-    private var conversationId: String?
+    public var roomId: String
+    public var senderId: String
     public var isNewConversation = false
     public let realmService = RealmService.shared
     public var realDataBase: RealmDataBase?
@@ -41,19 +41,15 @@ final class ChatViewController: MessagesViewController {
     }
 
     private var selfSender: Sender? {
-        guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
-            return nil
-        }
-        let safeEmail = DatabaseManager.safeEmail(emailAddress: email)
-
         return Sender(photoURL: "",
-                      senderId: safeEmail,
+                      senderId: self.senderId,
                       displayName: "Me")
     }
 
-    init(with email: String, id: String?) {
-        self.conversationId = id
-        self.receiverId = email
+    init(with senderId: String, roomId: String, receiverId: String) {
+        self.roomId = roomId
+        self.receiverId = receiverId
+        self.senderId = senderId
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -180,7 +176,7 @@ final class ChatViewController: MessagesViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         messageInputBar.inputTextView.becomeFirstResponder()
-        if let conversationId = conversationId {
+        if let conversationId = roomId {
             listenForMessages(roomId: conversationId, shouldScrollToBottom: true)
         }
     }
@@ -196,7 +192,7 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true, completion: nil)
         guard let messageId = createMessageId(),
-            let conversationId = conversationId,
+            let conversationId = roomId,
             let name = self.title,
             let selfSender = selfSender else {
                 return
@@ -309,10 +305,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
 
         print("Sending: \(text)")
 
-        let mmessage = Message(sender: selfSender,
-                               messageId: messageId,
-                               sentDate: Date(),
-                               kind: .text(text))
+        let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderID: <#T##String?#>, receiverID: <#T##String?#>)
 
         // Send Message
         if isNewConversation {
@@ -324,12 +317,12 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
             self.messageInputBar.inputTextView.text = nil
         }
         else {
-            guard let conversationId = conversationId, let name = self.title else {
+            guard let conversationId = roomId, let name = self.title else {
                 return
             }
 
             // append to existing conversation data
-            DatabaseManager.shared.sendMessage(to: conversationId, otherUserEmail: otherUserEmail, name: name, newMessage: mmessage, completion: { [weak self] success in
+            DatabaseManager.shared.sendMessage(to: conversationId, otherUserEmail: otherUserEmail, name: name, newMessage: newMessage, completion: { [weak self] success in
                 if success {
                     self?.messageInputBar.inputTextView.text = nil
                     print("message sent")

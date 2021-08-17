@@ -9,9 +9,10 @@
 /* Begin PBXBuildFile section */
 		0D71A05626C8E6B3008C9261 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 0D71A05526C8E6B3008C9261 /* Podfile */; };
 		6D07A79262C1266205F60C8E /* Pods_RealmTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D28855CA85CC6FCAF868E36B /* Pods_RealmTest.framework */; };
+		C012689226CB6B1F00846918 /* ChatModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012689126CB6B1F00846918 /* ChatModule.swift */; };
 		C01291F526C6620B003015A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01291F426C6620B003015A0 /* AppDelegate.swift */; };
 		C01291F726C6620B003015A0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01291F626C6620B003015A0 /* SceneDelegate.swift */; };
-		C01291F926C6620B003015A0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01291F826C6620B003015A0 /* ViewController.swift */; };
+		C01291F926C6620B003015A0 /* OCViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01291F826C6620B003015A0 /* OCViewController.swift */; };
 		C01291FC26C6620B003015A0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C01291FA26C6620B003015A0 /* Main.storyboard */; };
 		C01291FE26C6620C003015A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C01291FD26C6620C003015A0 /* Assets.xcassets */; };
 		C012920126C6620C003015A0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C01291FF26C6620C003015A0 /* LaunchScreen.storyboard */; };
@@ -26,16 +27,18 @@
 		C012921A26C66354003015A0 /* PhotoViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921326C66354003015A0 /* PhotoViewerViewController.swift */; };
 		C012921B26C66354003015A0 /* XMPPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921426C66354003015A0 /* XMPPManager.swift */; };
 		C03C353126CA32C100177866 /* RealmDataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03C353026CA32C100177866 /* RealmDataBase.swift */; };
+		C078C4A526CB555A005FD062 /* ChatModuleDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C078C4A426CB555A005FD062 /* ChatModuleDataSource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0D71A05526C8E6B3008C9261 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
 		0FA83136867C38929CEC73AA /* Pods-RealmTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RealmTest.debug.xcconfig"; path = "Target Support Files/Pods-RealmTest/Pods-RealmTest.debug.xcconfig"; sourceTree = "<group>"; };
 		95580976E99D808EF4BC9730 /* Pods-RealmTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RealmTest.release.xcconfig"; path = "Target Support Files/Pods-RealmTest/Pods-RealmTest.release.xcconfig"; sourceTree = "<group>"; };
+		C012689126CB6B1F00846918 /* ChatModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatModule.swift; sourceTree = "<group>"; };
 		C01291F126C6620B003015A0 /* RealmTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RealmTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C01291F426C6620B003015A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C01291F626C6620B003015A0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		C01291F826C6620B003015A0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		C01291F826C6620B003015A0 /* OCViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCViewController.swift; sourceTree = "<group>"; };
 		C01291FB26C6620B003015A0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C01291FD26C6620C003015A0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C012920026C6620C003015A0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -51,6 +54,7 @@
 		C012921326C66354003015A0 /* PhotoViewerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewerViewController.swift; sourceTree = "<group>"; };
 		C012921426C66354003015A0 /* XMPPManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XMPPManager.swift; sourceTree = "<group>"; };
 		C03C353026CA32C100177866 /* RealmDataBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmDataBase.swift; sourceTree = "<group>"; };
+		C078C4A426CB555A005FD062 /* ChatModuleDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatModuleDataSource.swift; sourceTree = "<group>"; };
 		D28855CA85CC6FCAF868E36B /* Pods_RealmTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RealmTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -90,7 +94,9 @@
 			children = (
 				C01291F426C6620B003015A0 /* AppDelegate.swift */,
 				C01291F626C6620B003015A0 /* SceneDelegate.swift */,
-				C01291F826C6620B003015A0 /* ViewController.swift */,
+				C01291F826C6620B003015A0 /* OCViewController.swift */,
+				C078C4A426CB555A005FD062 /* ChatModuleDataSource.swift */,
+				C012689126CB6B1F00846918 /* ChatModule.swift */,
 				C012920826C6631F003015A0 /* ChatMessage.swift */,
 				C012920A26C6631F003015A0 /* MessageRoom.swift */,
 				C012920926C6631F003015A0 /* User.swift */,
@@ -243,14 +249,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				C012920D26C6631F003015A0 /* MessageRoom.swift in Sources */,
+				C012689226CB6B1F00846918 /* ChatModule.swift in Sources */,
 				C012921826C66354003015A0 /* ChatModels.swift in Sources */,
 				C03C353126CA32C100177866 /* RealmDataBase.swift in Sources */,
 				C012921926C66354003015A0 /* MockMessages.swift in Sources */,
 				C012921526C66354003015A0 /* RealService.swift in Sources */,
 				C012921626C66354003015A0 /* ChatViewController.swift in Sources */,
 				C012921A26C66354003015A0 /* PhotoViewerViewController.swift in Sources */,
+				C078C4A526CB555A005FD062 /* ChatModuleDataSource.swift in Sources */,
 				C012921B26C66354003015A0 /* XMPPManager.swift in Sources */,
-				C01291F926C6620B003015A0 /* ViewController.swift in Sources */,
+				C01291F926C6620B003015A0 /* OCViewController.swift in Sources */,
 				C012921726C66354003015A0 /* ConversationsModels.swift in Sources */,
 				C012920B26C6631F003015A0 /* ChatMessage.swift in Sources */,
 				C01291F526C6620B003015A0 /* AppDelegate.swift in Sources */,

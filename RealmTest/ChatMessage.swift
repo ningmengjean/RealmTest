@@ -23,7 +23,6 @@ public class ChatMessage: Object {
     @Persisted var messageBody = ""
     @Persisted var messageKind = Message_Kind.Text
     @Persisted var timeStamp = Date()
-    @Persisted var partition: String = "MessageRoom.id"
     @Persisted var senderID: String?
     @Persisted var receiverID: String?
   
@@ -31,12 +30,11 @@ public class ChatMessage: Object {
            return "_id"
     }
     
-    convenience init(messageBody: String, messageKind: Message_Kind, timeStamp: Date, partition: String, senderID: String?, receiverID: String?) {
+    convenience init(messageBody: String, messageKind: Message_Kind, timeStamp: Date, senderID: String?, receiverID: String?) {
         self.init()
         self.messageBody = messageBody
         self.messageKind = messageKind
         self.timeStamp = timeStamp
-        self.partition = partition
         self.senderID = senderID
         self.receiverID = receiverID
     }
@@ -70,7 +68,6 @@ extension ChatMessage: MessageType {
         }
     }
 }
-
 
 extension String: MediaItem {
     

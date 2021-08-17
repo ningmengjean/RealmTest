@@ -14,14 +14,14 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class OCViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
    
     var tableView: UITableView = {
         let table = UITableView()
         return table
     }()
-    var xmppManager: XMPPManager!
-
+    var chatModule: ChatModule?
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.frame = view.bounds
@@ -32,8 +32,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 
     var users = ["user4@localhost","user5@localhost"]
-   
-    
+    var receiver = String()
     private func messageRoomID(users: [String]) -> String {
         var id = String()
         var usersEmail = [String]()
@@ -59,14 +58,35 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
-        let JIDText = cell?.textLabel?.text
-        xmppManager = try! XMPPManager(hostName: "localhost", userJIDString: JIDText!, password: "pass")
-        xmppManager.connect()
-        //xmppManager.sendMessage(message: )
-        UserDefaults.setValue("user4", forKey: "userName")
-        let vc = ChatViewController(with: "user5@localhost", id: messageRoomID(users: users))
-        vc.receiverId = JIDText!
+        guard let cellText = cell?.textLabel?.text else { return }
+        self.receiver = cellText
+        self.chatModule = ChatModule(chatModuleDataSource: self, roomId: messageRoomID(users: [localUserName, receiverName]))
+        self.chatModule?.xmppManager?.connect()
+        let vc = ChatViewController(with: self.localUserName, roomId: messageRoomID(users: [localUserName, receiverName]), receiverId: cellText)
+        self.chatModule?.initVC = vc 
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+extension OCViewController: ChatModuleDataSource {
+    var xmppHostName: String {
+        return "localhost"
+    }
+    
+    var xmppUserJIDString: String {
+        return "user4@localhost"
+    }
+    
+    var xmppUserPassword: String {
+        return "pass"
+    }
+    
+    var localUserName: String {
+        return String(self.xmppUserJIDString.split(separator: "@")[0])
+    }
+    
+    var receiverName: String {
+        return String(self.receiver.split(separator: "@")[0])
     }
 }
 

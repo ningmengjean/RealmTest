@@ -17,8 +17,8 @@ class MockMessages: NSObject {
                           users: [user4,user5],
                           messages: [chatMessage1,chatMessage2])
     }()
-    let chatMessage1 = ChatMessage(messageBody: "hello", messageKind: .Text, timeStamp: Date(), partition: "user5@localhost.user4@localhost", senderID: User(userName: "user4", email: "user4@localhost", displayName: "user4", avatarImage: nil).userName, receiverID: nil)
-    let chatMessage2 = ChatMessage(messageBody: "hellohello", messageKind: .Text, timeStamp: Date(), partition: "user5@localhost.user4@localhost", senderID: nil, receiverID: User(userName: "user5", email: "user5@localhost", displayName: "user5", avatarImage: nil).userName)
+    let chatMessage1 = ChatMessage(messageBody: "hello", messageKind: .Text, timeStamp: Date(), senderID: User(userName: "user4", email: "user4@localhost", displayName: "user4", avatarImage: nil).userName, receiverID: nil)
+    let chatMessage2 = ChatMessage(messageBody: "hellohello", messageKind: .Text, timeStamp: Date(), senderID: nil, receiverID: User(userName: "user5", email: "user5@localhost", displayName: "user5", avatarImage: nil).userName)
     func saveData() {
         RealmService.shared.saveObject(user4)
         RealmService.shared.saveObject(user5)
