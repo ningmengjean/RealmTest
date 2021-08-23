@@ -23,7 +23,6 @@ public class XMPPManager: NSObject {
     public let userJID: XMPPJID
     public let hostPort: UInt16
     public let password: String
-    private let realmDataBase: RealmDataBase?
     public weak var delegate: XMPPDelegate?
 
     public init(hostName: String, userJIDString: String, hostPort: UInt16 = 5222, password: String) throws {

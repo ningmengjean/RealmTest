@@ -33,6 +33,7 @@ final class ChatViewController: MessagesViewController {
     public var isNewConversation = false
     public let realmService = RealmService.shared
     public var realDataBase: RealmDataBase?
+    public var xmppManager: XMPPManager?
 
     public var messages = [MessageType]() {
         didSet {
@@ -186,107 +187,107 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
         picker.dismiss(animated: true, completion: nil)
     }
 
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        picker.dismiss(animated: true, completion: nil)
-        guard let messageId = createMessageId(),
-            let name = self.title,
-            let selfSender = selfSender else {
-                return
-        }
-
-        if let image = info[.editedImage] as? UIImage, let imageData =  image.pngData() {
-            let fileName = "photo_message_" + messageId.replacingOccurrences(of: " ", with: "-") + ".png"
-
-            // Upload image
-
-            StorageManager.shared.uploadMessagePhoto(with: imageData, fileName: fileName, completion: { [weak self] result in
-                guard let strongSelf = self else {
-                    return
-                }
-
-                switch result {
-                case .success(let urlString):
-                    // Ready to send message
-                    print("Uploaded Message Photo: \(urlString)")
-
-                    guard let url = URL(string: urlString),
-                        let placeholder = UIImage(systemName: "plus") else {
-                            return
-                    }
-
-                    let media = Media(url: url,
-                                      image: nil,
-                                      placeholderImage: placeholder,
-                                      size: .zero)
-
-                    let message = Message(sender: selfSender,
-                                          messageId: messageId,
-                                          sentDate: Date(),
-                                          kind: .photo(media))
-
-                    DatabaseManager.shared.sendMessage(to: conversationId, otherUserEmail: strongSelf.otherUserEmail, name: name, newMessage: message, completion: { success in
-
-                        if success {
-                            print("sent photo message")
-                        }
-                        else {
-                            print("failed to send photo message")
-                        }
-
-                    })
-
-                case .failure(let error):
-                    print("message photo upload error: \(error)")
-                }
-            })
-        }
-        else if let videoUrl = info[.mediaURL] as? URL {
-            let fileName = "photo_message_" + messageId.replacingOccurrences(of: " ", with: "-") + ".mov"
-
-            // Upload Video
-
-            StorageManager.shared.uploadMessageVideo(with: videoUrl, fileName: fileName, completion: { [weak self] result in
-                guard let strongSelf = self else {
-                    return
-                }
-
-                switch result {
-                case .success(let urlString):
-                    // Ready to send message
-                    print("Uploaded Message Video: \(urlString)")
-
-                    guard let url = URL(string: urlString),
-                        let placeholder = UIImage(systemName: "plus") else {
-                            return
-                    }
-
-                    let media = Media(url: url,
-                                      image: nil,
-                                      placeholderImage: placeholder,
-                                      size: .zero)
-
-                    let message = Message(sender: selfSender,
-                                          messageId: messageId,
-                                          sentDate: Date(),
-                                          kind: .video(media))
-
-                    DatabaseManager.shared.sendMessage(to: conversationId, otherUserEmail: strongSelf.otherUserEmail, name: name, newMessage: message, completion: { success in
-
-                        if success {
-                            print("sent photo message")
-                        }
-                        else {
-                            print("failed to send photo message")
-                        }
-
-                    })
-
-                case .failure(let error):
-                    print("message photo upload error: \(error)")
-                }
-            })
-        }
-    }
+//    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+//        picker.dismiss(animated: true, completion: nil)
+//        guard let messageId = createMessageId(),
+//            let name = self.title,
+//            let selfSender = selfSender else {
+//                return
+//        }
+//
+//        if let image = info[.editedImage] as? UIImage, let imageData =  image.pngData() {
+//            let fileName = "photo_message_" + messageId.replacingOccurrences(of: " ", with: "-") + ".png"
+//
+//            // Upload image
+//
+//            StorageManager.shared.uploadMessagePhoto(with: imageData, fileName: fileName, completion: { [weak self] result in
+//                guard let strongSelf = self else {
+//                    return
+//                }
+//
+//                switch result {
+//                case .success(let urlString):
+//                    // Ready to send message
+//                    print("Uploaded Message Photo: \(urlString)")
+//
+//                    guard let url = URL(string: urlString),
+//                        let placeholder = UIImage(systemName: "plus") else {
+//                            return
+//                    }
+//
+//                    let media = Media(url: url,
+//                                      image: nil,
+//                                      placeholderImage: placeholder,
+//                                      size: .zero)
+//
+//                    let message = Message(sender: selfSender,
+//                                          messageId: messageId,
+//                                          sentDate: Date(),
+//                                          kind: .photo(media))
+//
+//                    DatabaseManager.shared.sendMessage(to: conversationId, otherUserEmail: strongSelf.otherUserEmail, name: name, newMessage: message, completion: { success in
+//
+//                        if success {
+//                            print("sent photo message")
+//                        }
+//                        else {
+//                            print("failed to send photo message")
+//                        }
+//
+//                    })
+//
+//                case .failure(let error):
+//                    print("message photo upload error: \(error)")
+//                }
+//            })
+//        }
+//        else if let videoUrl = info[.mediaURL] as? URL {
+//            let fileName = "photo_message_" + messageId.replacingOccurrences(of: " ", with: "-") + ".mov"
+//
+//            // Upload Video
+//
+//            StorageManager.shared.uploadMessageVideo(with: videoUrl, fileName: fileName, completion: { [weak self] result in
+//                guard let strongSelf = self else {
+//                    return
+//                }
+//
+//                switch result {
+//                case .success(let urlString):
+//                    // Ready to send message
+//                    print("Uploaded Message Video: \(urlString)")
+//
+//                    guard let url = URL(string: urlString),
+//                        let placeholder = UIImage(systemName: "plus") else {
+//                            return
+//                    }
+//
+//                    let media = Media(url: url,
+//                                      image: nil,
+//                                      placeholderImage: placeholder,
+//                                      size: .zero)
+//
+//                    let message = Message(sender: selfSender,
+//                                          messageId: messageId,
+//                                          sentDate: Date(),
+//                                          kind: .video(media))
+//
+//                    DatabaseManager.shared.sendMessage(to: conversationId, otherUserEmail: strongSelf.otherUserEmail, name: name, newMessage: message, completion: { success in
+//
+//                        if success {
+//                            print("sent photo message")
+//                        }
+//                        else {
+//                            print("failed to send photo message")
+//                        }
+//
+//                    })
+//
+//                case .failure(let error):
+//                    print("message photo upload error: \(error)")
+//                }
+//            })
+//        }
+//    }
 
 }
 
@@ -296,26 +297,25 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
         guard !text.replacingOccurrences(of: " ", with: "").isEmpty else {
                 return
         }
-        let realmDataBase = RealmDataBase(senderId: self.senderId, receiverId: self.receiverId, roomId: self.roomId)
         print("Sending: \(text)")
-        let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderID: self.senderId, receiverID: self.receiverId)
-        
         // Send Message
+        let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderID: self.senderId, receiverID: self.receiverId)
+        xmppManager?.sendMessage(message: newMessage)
         if isNewConversation {
-            guard let roomId = realmDataBase.creatNewMessageRoom(senderId: self.senderId, receiverId: self.receiverId) else { return }
             self.isNewConversation = false
-            let room = realmService.object(MessageRoom.self)!.filter("roomId = @%", roomId)[0]
+            self.messages.append(newMessage)
+            let room = realmService.object(MessageRoom.self)!.filter("roomId = @%", self.roomId)[0]
             room.messages.append(newMessage)
             realmService.saveObject(room)
-            self.listenForMessages(roomId: room.id, shouldScrollToBottom: true)
             self.messageInputBar.inputTextView.text = nil
         }
         else {
             // append to existing conversation data
-            var oldMessages = realmDataBase.getAllMessagesForSpeficMessageRoom(roomID: roomId)
-            var newMessageArray = oldMessages.append(newMessage)
-            self.messages = newMessageArray 
-            self.listenForMessages(roomId: roomId, shouldScrollToBottom: true)
+            self.listenForMessages(roomId: self.roomId, shouldScrollToBottom: true)
+            let room = realmService.object(MessageRoom.self)!.filter("roomId = @%", self.roomId)[0]
+            room.messages.append(newMessage)
+            realmService.saveObject(room)
+            self.messages.append(newMessage)
             self.messageInputBar.inputTextView.text = nil
         }
     }
@@ -374,67 +374,67 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
         }
     }
 
-    func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
-
-        let sender = message.sender
-
-        if sender.senderId == selfSender?.senderId {
-            // show our image
-            if let currentUserImageURL = self.senderPhotoURL {
-                avatarView.kf.setImage(with: currentUserImageURL)
-            }
-            else {
-                // images/safeemail_profile_picture.png
-
-                guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
-                    return
-                }
-
-                let safeEmail = DatabaseManager.safeEmail(emailAddress: email)
-                let path = "images/\(safeEmail)_profile_picture.png"
-
-                // fetch url
-                StorageManager.shared.downloadURL(for: path, completion: { [weak self] result in
-                    switch result {
-                    case .success(let url):
-                        self?.senderPhotoURL = url
-                        DispatchQueue.main.async {
-                            avatarView.sd_setImage(with: url, completed: nil)
-                        }
-                    case .failure(let error):
-                        print("\(error)")
-                    }
-                })
-            }
-        }
-        else {
-            // other user image
-            if let otherUsrePHotoURL = self.otherUserPhotoURL {
-                avatarView.kf.setImage(with: otherUsrePHotoURL)
-            }
-            else {
-                // fetch url
-                let email = self.receiverId
-
-                let safeEmail = DatabaseManager.safeEmail(emailAddress: email)
-                let path = "images/\(safeEmail)_profile_picture.png"
-
-                // fetch url
-                StorageManager.shared.downloadURL(for: path, completion: { [weak self] result in
-                    switch result {
-                    case .success(let url):
-                        self?.otherUserPhotoURL = url
-                        DispatchQueue.main.async {
-                            avatarView.sd_setImage(with: url, completed: nil)
-                        }
-                    case .failure(let error):
-                        print("\(error)")
-                    }
-                })
-            }
-        }
-
-    }
+//    func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
+//
+//        let sender = message.sender
+//
+//        if sender.senderId == selfSender?.senderId {
+//            // show our image
+//            if let currentUserImageURL = self.senderPhotoURL {
+//                avatarView.kf.setImage(with: currentUserImageURL)
+//            }
+//            else {
+//                // images/safeemail_profile_picture.png
+//
+//                guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
+//                    return
+//                }
+//
+//                let safeEmail = DatabaseManager.safeEmail(emailAddress: email)
+//                let path = "images/\(safeEmail)_profile_picture.png"
+//
+//                // fetch url
+//                StorageManager.shared.downloadURL(for: path, completion: { [weak self] result in
+//                    switch result {
+//                    case .success(let url):
+//                        self?.senderPhotoURL = url
+//                        DispatchQueue.main.async {
+//                            avatarView.sd_setImage(with: url, completed: nil)
+//                        }
+//                    case .failure(let error):
+//                        print("\(error)")
+//                    }
+//                })
+//            }
+//        }
+//        else {
+//            // other user image
+//            if let otherUsrePHotoURL = self.otherUserPhotoURL {
+//                avatarView.kf.setImage(with: otherUsrePHotoURL)
+//            }
+//            else {
+//                // fetch url
+//                let email = self.receiverId
+//
+//                let safeEmail = DatabaseManager.safeEmail(emailAddress: email)
+//                let path = "images/\(safeEmail)_profile_picture.png"
+//
+//                // fetch url
+//                StorageManager.shared.downloadURL(for: path, completion: { [weak self] result in
+//                    switch result {
+//                    case .success(let url):
+//                        self?.otherUserPhotoURL = url
+//                        DispatchQueue.main.async {
+//                            avatarView.sd_setImage(with: url, completed: nil)
+//                        }
+//                    case .failure(let error):
+//                        print("\(error)")
+//                    }
+//                })
+//            }
+//        }
+//
+//    }
 }
 
 extension ChatViewController: MessageCellDelegate {

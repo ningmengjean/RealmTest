@@ -31,7 +31,7 @@ class OCViewController: UIViewController, UITableViewDelegate, UITableViewDataSo
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
     }
 
-    var users = ["user4@localhost","user5@localhost"]
+    var users = ["user4@localhost","user5@localhost","user5@localhost","user5@localhost","user5@localhost","user5@localhost"]
     var receiver = String()
     private func messageRoomID(users: [String]) -> String {
         var id = String()

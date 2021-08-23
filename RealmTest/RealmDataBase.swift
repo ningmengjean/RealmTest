@@ -7,6 +7,7 @@
 
 import Foundation
 import RealmSwift
+import XMPPFramework
 
 class RealmDataBase: NSObject {
     let realmService = RealmService.shared
@@ -49,12 +50,21 @@ class RealmDataBase: NSObject {
         return []
     }
     
-    public func creatNewMessageRoom(senderId: String, receiverId: String) -> String? {
+    public func creatNewMessageRoom(senderId: String, receiverId: String) {
         let user1 = User(userName: senderId, email: senderId, displayName: senderId, avatarImage: nil)
         let user2 = User(userName: receiverId, email: receiverId, displayName: receiverId, avatarImage: nil)
         let room = MessageRoom(displayName: receiverId, timeStamp: Date(), users: [user1, user2], messages: [])
-        realmService.saveObject(room)
-        return room.id
+        if realmService.object(MessageRoom.self)?.filter("roomId = %@", room.roomId)[0] == nil {
+            realmService.saveObject(room)
+        }
+    }
+}
+
+extension RealmDataBase: XMPPDelegate {
+    public func receivedMessage(message: XMPPMessage) {
+        guard let messageBody = message.body else { return }
+        let message = ChatMessage(messageBody: messageBody, messageKind: Message_Kind(rawValue: message.type!) ?? .Text, timeStamp: Date(),senderID: message.fromStr, receiverID: message.toStr)
+        self.currentMessage.append(message)
     }
 }
 
