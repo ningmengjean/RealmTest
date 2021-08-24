@@ -30,14 +30,13 @@ final class ChatViewController: MessagesViewController {
     public var receiverId: String
     public var roomId: String
     public var senderId: String
-    public var isNewConversation = false
     public let realmService = RealmService.shared
     public var realDataBase: RealmDataBase?
     public var xmppManager: XMPPManager?
 
     public var messages = [MessageType]() {
         didSet {
-            //reloadData()
+            listenForMessages(roomId: self.roomId, shouldScrollToBottom: true)
         }
     }
 
@@ -164,7 +163,7 @@ final class ChatViewController: MessagesViewController {
 
     private func listenForMessages(roomId: String, shouldScrollToBottom: Bool) {
         let realmDataBase = RealmDataBase(senderId: self.senderId, receiverId: self.receiverId, roomId: self.roomId)
-        let messages = realmDataBase.getAllMessagesForSpeficMessageRoom(roomID: roomId)
+        let messages = Array(realmDataBase.currentRoom.messages)
         self.messages = messages
         DispatchQueue.main.async {
             self.messagesCollectionView.reloadDataAndKeepOffset()
@@ -295,29 +294,14 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
 
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
         guard !text.replacingOccurrences(of: " ", with: "").isEmpty else {
-                return
+            return
         }
-        print("Sending: \(text)")
         // Send Message
         let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderID: self.senderId, receiverID: self.receiverId)
         xmppManager?.sendMessage(message: newMessage)
-        if isNewConversation {
-            self.isNewConversation = false
-            self.messages.append(newMessage)
-            let room = realmService.object(MessageRoom.self)!.filter("roomId = @%", self.roomId)[0]
-            room.messages.append(newMessage)
-            realmService.saveObject(room)
-            self.messageInputBar.inputTextView.text = nil
-        }
-        else {
-            // append to existing conversation data
-            self.listenForMessages(roomId: self.roomId, shouldScrollToBottom: true)
-            let room = realmService.object(MessageRoom.self)!.filter("roomId = @%", self.roomId)[0]
-            room.messages.append(newMessage)
-            realmService.saveObject(room)
-            self.messages.append(newMessage)
-            self.messageInputBar.inputTextView.text = nil
-        }
+        self.realDataBase?.currentMessage.append(newMessage)
+        self.listenForMessages(roomId: self.roomId, shouldScrollToBottom: true)
+        self.messageInputBar.inputTextView.text = nil
     }
 }
 

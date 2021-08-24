@@ -57,12 +57,12 @@ class OCViewController: UIViewController, UITableViewDelegate, UITableViewDataSo
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath)
+        let cell = tableView.cellForRow(at: indexPath) 
         guard let cellText = cell?.textLabel?.text else { return }
-        self.receiver = cellText
-        self.chatModule = ChatModule(chatModuleDataSource: self, roomId: messageRoomID(users: [localUserName, receiverName]))
+        self.receiver = String(cellText.split(separator: "@")[0])
+        self.chatModule = ChatModule(chatModuleDataSource: self, roomId: messageRoomID(users: [localUserName, receiver]), receiverId: receiver)
         self.chatModule?.xmppManager?.connect()
-        let vc = ChatViewController(with: self.localUserName, roomId: messageRoomID(users: [localUserName, receiverName]), receiverId: cellText)
+        let vc = ChatViewController(with: self.localUserName, roomId: messageRoomID(users: [localUserName, receiver]), receiverId: receiver)
         self.chatModule?.initVC = vc 
         self.navigationController?.pushViewController(vc, animated: true)
     }
@@ -83,10 +83,6 @@ extension OCViewController: ChatModuleDataSource {
     
     var localUserName: String {
         return String(self.xmppUserJIDString.split(separator: "@")[0])
-    }
-    
-    var receiverName: String {
-        return String(self.receiver.split(separator: "@")[0])
     }
 }
 

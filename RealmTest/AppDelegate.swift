@@ -9,10 +9,16 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    var window: UIWindow?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
+        let nav1 = UINavigationController()
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "OCViewController")
+        nav1.viewControllers = [vc]
+        self.window?.rootViewController = nav1
+        self.window?.makeKeyAndVisible()
         return true
     }
 

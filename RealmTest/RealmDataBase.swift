@@ -11,20 +11,28 @@ import XMPPFramework
 
 class RealmDataBase: NSObject {
     let realmService = RealmService.shared
-    var currentRoom: MessageRoom?
+    var roomId: String
     var senderId: String
     var receiverId: String
     init(senderId: String, receiverId: String, roomId: String) {
         self.senderId = senderId
         self.receiverId = receiverId
-        let room = realmService.object(MessageRoom.self)?.filter("roomId = %@", roomId).first
-        self.currentRoom = room
+        self.roomId = roomId
     }
+    
     let maxCacheMessagesCount = 10
     
     var currentMessage = [ChatMessage]() {
         didSet {
             handleCurrentMessageChange()
+        }
+    }
+    
+    var currentRoom: MessageRoom {
+        if let room = realmService.object(MessageRoom.self)?.filter("roomId = %@", roomId).first {
+            return room
+        } else {
+            return self.creatNewMessageRoom(senderId: senderId, receiverId: receiverId)
         }
     }
     
@@ -35,7 +43,6 @@ class RealmDataBase: NSObject {
         flushMessages()
     }
     private func flushMessages() {
-        guard let currentRoom = currentRoom else { return }
         currentRoom.messages.append(objectsIn: currentMessage)
         realmService.saveObject(currentRoom)
         currentMessage.removeAll()
@@ -50,13 +57,14 @@ class RealmDataBase: NSObject {
         return []
     }
     
-    public func creatNewMessageRoom(senderId: String, receiverId: String) {
+    public func creatNewMessageRoom(senderId: String, receiverId: String) -> MessageRoom {
         let user1 = User(userName: senderId, email: senderId, displayName: senderId, avatarImage: nil)
         let user2 = User(userName: receiverId, email: receiverId, displayName: receiverId, avatarImage: nil)
         let room = MessageRoom(displayName: receiverId, timeStamp: Date(), users: [user1, user2], messages: [])
         if realmService.object(MessageRoom.self)?.filter("roomId = %@", room.roomId)[0] == nil {
             realmService.saveObject(room)
         }
+        return room
     }
 }
 
