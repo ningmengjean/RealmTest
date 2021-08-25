@@ -12,12 +12,16 @@ import XMPPFramework
 class RealmDataBase: NSObject {
     let realmService = RealmService.shared
     var roomId: String
+    var senderEmail: String
     var senderId: String
+    var receiverEmail: String
     var receiverId: String
-    init(senderId: String, receiverId: String, roomId: String) {
-        self.senderId = senderId
-        self.receiverId = receiverId
+    init(senderEmail: String, receiverEmail: String, roomId: String) {
+        self.senderEmail = senderEmail
+        self.senderId = String(senderEmail.split(separator: "@")[0])
+        self.receiverEmail = receiverEmail
         self.roomId = roomId
+        self.receiverId = String(receiverEmail.split(separator: "@")[0])
     }
     
     let maxCacheMessagesCount = 10
@@ -29,10 +33,12 @@ class RealmDataBase: NSObject {
     }
     
     var currentRoom: MessageRoom {
-        if let room = realmService.object(MessageRoom.self)?.filter("roomId = %@", roomId).first {
-            return room
+        let rooms = realmService.object(MessageRoom.self)
+        let targetRoom = rooms?.filter("roomId = %@", self.roomId).first
+        if targetRoom == nil {
+            return self.creatNewMessageRoom(senderEmail: self.senderEmail, receiverEmail: self.receiverEmail)
         } else {
-            return self.creatNewMessageRoom(senderId: senderId, receiverId: receiverId)
+            return targetRoom!
         }
     }
     
@@ -48,8 +54,8 @@ class RealmDataBase: NSObject {
         currentMessage.removeAll()
     }
     
-    public func getAllMessagesForSpeficMessageRoom(roomID: String) -> [ChatMessage] {
-        let room = realmService.object(MessageRoom.self)?.filter("roomId = @%", roomID)[0]
+    public func getAllMessagesForSpeficMessageRoom(roomId: String) -> [ChatMessage] {
+        let room = realmService.object(MessageRoom.self)?.filter("roomId = %@", self.roomId).first
         if let room = room {
             let messages = Array(room.messages)
             return messages
@@ -57,21 +63,23 @@ class RealmDataBase: NSObject {
         return []
     }
     
-    public func creatNewMessageRoom(senderId: String, receiverId: String) -> MessageRoom {
-        let user1 = User(userName: senderId, email: senderId, displayName: senderId, avatarImage: nil)
-        let user2 = User(userName: receiverId, email: receiverId, displayName: receiverId, avatarImage: nil)
-        let room = MessageRoom(displayName: receiverId, timeStamp: Date(), users: [user1, user2], messages: [])
-        if realmService.object(MessageRoom.self)?.filter("roomId = %@", room.roomId)[0] == nil {
-            realmService.saveObject(room)
-        }
+    public func creatNewMessageRoom(senderEmail: String, receiverEmail: String) -> MessageRoom {
+        let user1 = User(userName: seperateString(str: senderEmail), email: senderEmail, displayName: seperateString(str: senderEmail), avatarImage: nil)
+        let user2 = User(userName: seperateString(str: receiverEmail), email: receiverEmail, displayName: seperateString(str: receiverEmail), avatarImage: nil)
+        let room = MessageRoom(displayName: seperateString(str: receiverEmail), timeStamp: Date(), users: [user1, user2], messages: [])
+        realmService.saveObject(room)
         return room
+    }
+    
+    func seperateString(str: String) -> String {
+        return String(str.split(separator: "@")[0])
     }
 }
 
 extension RealmDataBase: XMPPDelegate {
     public func receivedMessage(message: XMPPMessage) {
         guard let messageBody = message.body else { return }
-        let message = ChatMessage(messageBody: messageBody, messageKind: Message_Kind(rawValue: message.type!) ?? .Text, timeStamp: Date(),senderID: message.fromStr, receiverID: message.toStr)
+        let message = ChatMessage(messageBody: messageBody, messageKind: Message_Kind(rawValue: message.type!) ?? .Text, timeStamp: Date(),senderId: message.fromStr, receiverId: message.toStr)
         self.currentMessage.append(message)
     }
 }

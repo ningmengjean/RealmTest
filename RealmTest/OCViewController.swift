@@ -32,16 +32,16 @@ class OCViewController: UIViewController, UITableViewDelegate, UITableViewDataSo
     }
 
     var users = ["user4@localhost","user5@localhost","user5@localhost","user5@localhost","user5@localhost","user5@localhost"]
-    var receiver = String()
+    var receiverEmail = String()
     private func messageRoomID(users: [String]) -> String {
         var id = String()
-        var usersEmail = [String]()
+        var usersName = [String]()
         for user in users {
-            usersEmail.append(user)
+            usersName.append(user)
         }
-        usersEmail.sort(by: >)
-        for userEmail in usersEmail {
-            id += userEmail
+        usersName.sort(by: >)
+        for userName in usersName {
+            id += userName
         }
         return id
     }
@@ -59,12 +59,18 @@ class OCViewController: UIViewController, UITableViewDelegate, UITableViewDataSo
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) 
         guard let cellText = cell?.textLabel?.text else { return }
-        self.receiver = String(cellText.split(separator: "@")[0])
-        self.chatModule = ChatModule(chatModuleDataSource: self, roomId: messageRoomID(users: [localUserName, receiver]), receiverId: receiver)
+        self.receiverEmail = cellText
+        let localUserName = seperateString(str: self.localUserEmail)
+        let receiverName = seperateString(str: self.receiverEmail)
+        self.chatModule = ChatModule(chatModuleDataSource: self, roomId: messageRoomID(users: [localUserName, receiverName]), receiverEmail: self.receiverEmail)
         self.chatModule?.xmppManager?.connect()
-        let vc = ChatViewController(with: self.localUserName, roomId: messageRoomID(users: [localUserName, receiver]), receiverId: receiver)
+        let vc = ChatViewController(senderEmail: localUserEmail, roomId: messageRoomID(users: [localUserName, receiverName]), receiverEmail: self.receiverEmail)
         self.chatModule?.initVC = vc 
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func seperateString(str: String) -> String {
+        return String(str.split(separator: "@")[0])
     }
 }
 
@@ -81,8 +87,8 @@ extension OCViewController: ChatModuleDataSource {
         return "pass"
     }
     
-    var localUserName: String {
-        return String(self.xmppUserJIDString.split(separator: "@")[0])
+    var localUserEmail: String {
+        return "user4@localhost"
     }
 }
 

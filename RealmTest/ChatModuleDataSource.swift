@@ -11,5 +11,5 @@ public protocol ChatModuleDataSource {
     var xmppHostName: String { get }
     var xmppUserJIDString: String { get }
     var xmppUserPassword: String { get }
-    var localUserName: String { get }
+    var localUserEmail: String { get }
 }

@@ -20,7 +20,7 @@ enum Presence: String {
 }
 
 class User: Object {
-    @Persisted (primaryKey: true) var _id = UUID().uuidString
+    @Persisted var _id = UUID().uuidString
     @Persisted var userName = ""
     @Persisted var email = ""
     @Persisted var present = "On-Line"

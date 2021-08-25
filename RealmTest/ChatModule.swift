@@ -14,9 +14,9 @@ public class ChatModule: NSObject {
     var roomId: String
     var initVC: ChatViewController?
     
-    public init(chatModuleDataSource: ChatModuleDataSource, roomId: String, receiverId: String) {
+    public init(chatModuleDataSource: ChatModuleDataSource, roomId: String, receiverEmail: String) {
         self.roomId = roomId
-        self.realmDataBase = RealmDataBase(senderId: chatModuleDataSource.localUserName, receiverId: receiverId, roomId: roomId)
+        self.realmDataBase = RealmDataBase(senderEmail: chatModuleDataSource.localUserEmail, receiverEmail: receiverEmail, roomId: roomId)
         do { self.xmppManager = try XMPPManager(hostName: chatModuleDataSource.xmppHostName, userJIDString: chatModuleDataSource.xmppUserJIDString, password: chatModuleDataSource.xmppUserPassword)}
         catch let error {
             print("XMPPError:",error)

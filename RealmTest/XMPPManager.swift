@@ -84,7 +84,7 @@ extension XMPPManager: XMPPStreamDelegate {
     public func xmppStreamDidAuthenticate(_ sender: XMPPStream) {
         self.xmppStream.send(XMPPPresence())
         print("Stream: Authenticated")
-        let message = ChatMessage(messageBody: "Yo", messageKind: .Text, timeStamp: Date(),senderID: "user4", receiverID: "user5")
+        let message = ChatMessage(messageBody: "Yo", messageKind: .Text, timeStamp: Date(),senderId: "user4", receiverId: "user5")
         sendMessage(message: message)
     }
 }

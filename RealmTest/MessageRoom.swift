@@ -12,13 +12,12 @@ class MessageRoom: Object {
     @Persisted (primaryKey: true) var id = ""
     @Persisted var displayName = ""
     @Persisted var timeStamp = Date()
+    @Persisted var roomId: String = ""
     @Persisted var users: List<User>
     @Persisted var messages: List<ChatMessage>
-    @Persisted var roomId: String = ""
     
     convenience init(displayName: String, timeStamp: Date, users: [User], messages: [ChatMessage]) {
         self.init()
-        self.id = messageRoomID(users: users)
         self.displayName = displayName
         self.timeStamp = timeStamp
         self.users.append(objectsIn: users)
@@ -26,16 +25,19 @@ class MessageRoom: Object {
         self.roomId = messageRoomID(users: Array(users))
     }
     
+    override static func primaryKey() -> String? {
+        return "id"
+    }
+    
     private func messageRoomID(users: [User]) -> String {
         var id = String()
-        var usersEmail = [String]()
+        var usersName = [String]()
         for user in users {
-            usersEmail.append(user.email)
+            usersName.append(user.userName)
         }
-        usersEmail.sort(by: >)
-        for userEmail in usersEmail {
-            id += "."
-            id += userEmail
+        usersName.sort(by: >)
+        for userName in usersName {
+            id += userName
         }
         return id
     }

@@ -46,10 +46,10 @@ final class ChatViewController: MessagesViewController {
                       displayName: "Me")
     }
 
-    init(with senderId: String, roomId: String, receiverId: String) {
+    init(senderEmail: String, roomId: String, receiverEmail: String) {
         self.roomId = roomId
-        self.receiverId = receiverId
-        self.senderId = senderId
+        self.receiverId = String(receiverEmail.split(separator: "@")[0])
+        self.senderId = String(senderEmail.split(separator: "@")[0])
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -162,7 +162,7 @@ final class ChatViewController: MessagesViewController {
     }
 
     private func listenForMessages(roomId: String, shouldScrollToBottom: Bool) {
-        let realmDataBase = RealmDataBase(senderId: self.senderId, receiverId: self.receiverId, roomId: self.roomId)
+        let realmDataBase = RealmDataBase(senderEmail: self.senderId, receiverEmail: self.receiverId, roomId: self.roomId)
         let messages = Array(realmDataBase.currentRoom.messages)
         self.messages = messages
         DispatchQueue.main.async {
@@ -297,7 +297,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
             return
         }
         // Send Message
-        let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderID: self.senderId, receiverID: self.receiverId)
+        let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderId: self.senderId, receiverId: self.receiverId)
         xmppManager?.sendMessage(message: newMessage)
         self.realDataBase?.currentMessage.append(newMessage)
         self.listenForMessages(roomId: self.roomId, shouldScrollToBottom: true)
