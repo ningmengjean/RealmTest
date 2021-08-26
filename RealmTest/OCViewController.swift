@@ -63,10 +63,8 @@ class OCViewController: UIViewController, UITableViewDelegate, UITableViewDataSo
         let localUserName = seperateString(str: self.localUserEmail)
         let receiverName = seperateString(str: self.receiverEmail)
         self.chatModule = ChatModule(chatModuleDataSource: self, roomId: messageRoomID(users: [localUserName, receiverName]), receiverEmail: self.receiverEmail)
-        self.chatModule?.xmppManager?.connect()
-        let vc = ChatViewController(senderEmail: localUserEmail, roomId: messageRoomID(users: [localUserName, receiverName]), receiverEmail: self.receiverEmail)
-        self.chatModule?.initVC = vc 
-        self.navigationController?.pushViewController(vc, animated: true)
+        chatModule?.listener = self
+        self.chatModule?.start()
     }
     
     func seperateString(str: String) -> String {
@@ -89,6 +87,12 @@ extension OCViewController: ChatModuleDataSource {
     
     var localUserEmail: String {
         return "user4@localhost"
+    }
+}
+
+extension OCViewController: ChatModuleListener{
+    func didInitializeSuccess(vc: UIViewController) {
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
 

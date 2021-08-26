@@ -8,11 +8,18 @@
 import Foundation
 import XMPPFramework
 
+public protocol ChatModuleListener: AnyObject {
+    func didInitializeSuccess(vc: UIViewController)
+}
+
 public class ChatModule: NSObject {
     var realmDataBase: RealmDataBase?
     var xmppManager: XMPPManager?
     var roomId: String
     var initVC: ChatViewController?
+    var senderEmail: String
+    var receiverEmail: String
+    public weak var listener: ChatModuleListener?
     
     public init(chatModuleDataSource: ChatModuleDataSource, roomId: String, receiverEmail: String) {
         self.roomId = roomId
@@ -21,8 +28,16 @@ public class ChatModule: NSObject {
         catch let error {
             print("XMPPError:",error)
         }
-        self.initVC?.xmppManager = self.xmppManager!
+        self.senderEmail = chatModuleDataSource.localUserEmail
+        self.receiverEmail = receiverEmail
         super.init()
+    }
+    
+    func start() {
+        self.xmppManager?.connect()
+        let vc = ChatViewController(senderEmail:self.senderEmail, roomId: self.roomId, receiverEmail: self.receiverEmail)
+        vc.xmppManager = xmppManager
+        listener?.didInitializeSuccess(vc: vc)
     }
 }
 

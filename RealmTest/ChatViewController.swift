@@ -34,7 +34,7 @@ final class ChatViewController: MessagesViewController, ChatViewControllerDelega
     public var senderId: String
     public let realmService = RealmService.shared
     public var realmDataBase: RealmDataBase
-    public var xmppManager: XMPPManager
+    public var xmppManager: XMPPManager?
 
     public lazy var messageList: [MessageType] = []
 
@@ -47,7 +47,6 @@ final class ChatViewController: MessagesViewController, ChatViewControllerDelega
         self.receiverId = String(receiverEmail.split(separator: "@")[0])
         self.senderId = String(senderEmail.split(separator: "@")[0])
         self.realmDataBase = RealmDataBase(senderEmail: senderEmail, receiverEmail: receiverEmail, roomId: roomId)
-        
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -58,7 +57,7 @@ final class ChatViewController: MessagesViewController, ChatViewControllerDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .red
-        self.xmppManager.chatDelegate = self
+        self.xmppManager?.chatDelegate = self
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
@@ -184,8 +183,7 @@ final class ChatViewController: MessagesViewController, ChatViewControllerDelega
     }
 
     private func listenForMessages(roomId: String, shouldScrollToBottom: Bool) {
-        let messages = Array(self.realmDataBase.currentRoom.messages)
-        self.messageList = messages
+        self.messageList = realmDataBase.getAllMessagesForSpeficMessageRoom(roomId: roomId)
         DispatchQueue.main.async {
             self.messagesCollectionView.reloadDataAndKeepOffset()
             if shouldScrollToBottom {
@@ -322,7 +320,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
         DispatchQueue.global(qos: .default).async {
             DispatchQueue.main.async { [weak self] in
                 let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderId: self?.senderId, receiverId: self?.receiverId)
-                self?.xmppManager.sendMessage(message: newMessage)
+                self?.xmppManager?.sendMessage(message: newMessage)
                 self?.realmDataBase.currentMessage.append(newMessage)
                 self?.insertMessage(newMessage)
                 self?.messageInputBar.inputTextView.text = nil

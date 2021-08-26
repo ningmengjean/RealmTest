@@ -9,7 +9,7 @@ import Foundation
 import RealmSwift
 
 class MessageRoom: Object {
-    @Persisted (primaryKey: true) var id = ""
+    @Persisted (primaryKey: true) var id = UUID().uuidString
     @Persisted var displayName = ""
     @Persisted var timeStamp = Date()
     @Persisted var roomId: String = ""
