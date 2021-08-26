@@ -21,7 +21,7 @@ public class ChatModule: NSObject {
         catch let error {
             print("XMPPError:",error)
         }
-        self.initVC?.xmppManager = self.xmppManager
+        self.initVC?.xmppManager = self.xmppManager!
         super.init()
     }
 }

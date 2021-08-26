@@ -24,6 +24,7 @@ public class XMPPManager: NSObject {
     public let hostPort: UInt16
     public let password: String
     public weak var delegate: XMPPDelegate?
+    public weak var chatDelegate: ChatViewControllerDelegate?
 
     public init(hostName: String, userJIDString: String, hostPort: UInt16 = 5222, password: String) throws {
         guard let userJID = XMPPJID(string: userJIDString) else {
@@ -75,6 +76,8 @@ extension XMPPManager: XMPPStreamDelegate {
     public func xmppStream(_ sender: XMPPStream, didReceive message: XMPPMessage) {
         print(message)
         delegate?.receivedMessage(message: message)
+        let chatMessage = ChatMessage(messageBody: message.body ?? "", messageKind: .Text, timeStamp: Date(), senderId: message.fromStr, receiverId: message.toStr)
+        chatDelegate?.insertMessage(chatMessage)
     }
     
     public func xmppStream(_ sender: XMPPStream, didReceive presence: XMPPPresence) {

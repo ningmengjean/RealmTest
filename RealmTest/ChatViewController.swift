@@ -13,8 +13,13 @@ import AVFoundation
 import AVKit
 import Kingfisher
 import CoreLocation
+import XMPPFramework
+  
+public  protocol ChatViewControllerDelegate: AnyObject {
+    func insertMessage(_ message: MessageType)
+}
 
-final class ChatViewController: MessagesViewController {
+final class ChatViewController: MessagesViewController, ChatViewControllerDelegate {
 
     public static let dateFormatter: DateFormatter = {
         let formattre = DateFormatter()
@@ -28,8 +33,8 @@ final class ChatViewController: MessagesViewController {
     public var roomId: String
     public var senderId: String
     public let realmService = RealmService.shared
-    public var realDataBase: RealmDataBase?
-    public var xmppManager: XMPPManager?
+    public var realmDataBase: RealmDataBase
+    public var xmppManager: XMPPManager
 
     public lazy var messageList: [MessageType] = []
 
@@ -41,6 +46,8 @@ final class ChatViewController: MessagesViewController {
         self.roomId = roomId
         self.receiverId = String(receiverEmail.split(separator: "@")[0])
         self.senderId = String(senderEmail.split(separator: "@")[0])
+        self.realmDataBase = RealmDataBase(senderEmail: senderEmail, receiverEmail: receiverEmail, roomId: roomId)
+        
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -51,7 +58,7 @@ final class ChatViewController: MessagesViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .red
-
+        self.xmppManager.chatDelegate = self
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
@@ -170,7 +177,6 @@ final class ChatViewController: MessagesViewController {
             picker.mediaTypes = ["public.movie"]
             picker.videoQuality = .typeMedium
             self?.present(picker, animated: true)
-
         }))
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 
@@ -178,8 +184,7 @@ final class ChatViewController: MessagesViewController {
     }
 
     private func listenForMessages(roomId: String, shouldScrollToBottom: Bool) {
-        let realmDataBase = RealmDataBase(senderEmail: self.senderId, receiverEmail: self.receiverId, roomId: self.roomId)
-        let messages = Array(realmDataBase.currentRoom.messages)
+        let messages = Array(self.realmDataBase.currentRoom.messages)
         self.messageList = messages
         DispatchQueue.main.async {
             self.messagesCollectionView.reloadDataAndKeepOffset()
@@ -317,29 +322,14 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
         DispatchQueue.global(qos: .default).async {
             DispatchQueue.main.async { [weak self] in
                 let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderId: self?.senderId, receiverId: self?.receiverId)
-                self?.xmppManager?.sendMessage(message: newMessage)
-                self?.realDataBase?.currentMessage.append(newMessage)
+                self?.xmppManager.sendMessage(message: newMessage)
+                self?.realmDataBase.currentMessage.append(newMessage)
                 self?.insertMessage(newMessage)
-                //self?.listenForMessages(roomId: self!.roomId, shouldScrollToBottom: true)
                 self?.messageInputBar.inputTextView.text = nil
                 self?.messagesCollectionView.scrollToLastItem(animated: true)
             }
         }
     }
-    
-//    private func insertMessages(_ data: [Any]) {
-//        for component in data {
-//            let user = self.currentSender
-//            if let str = component as? String {
-//                let message = ChatMessage(messageBody: str, messageKind: .Text, timeStamp: Date(), senderId: user().senderId, receiverId: self.receiverId)
-//                insertMessage(message)
-//            } else if let _ = component as? UIImage {
-//                let url = "String(URL)"
-//                let message = ChatMessage(messageBody: url, messageKind: .Photo, timeStamp: Date(), senderId: user().senderId, receiverId: self.receiverId)
-//                insertMessage(message)
-//            }
-//        }
-//    }
 }
 
 extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
