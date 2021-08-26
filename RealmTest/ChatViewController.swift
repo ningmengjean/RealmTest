@@ -16,9 +16,6 @@ import CoreLocation
 
 final class ChatViewController: MessagesViewController {
 
-    private var senderPhotoURL: URL?
-    private var otherUserPhotoURL: URL?
-
     public static let dateFormatter: DateFormatter = {
         let formattre = DateFormatter()
         formattre.dateStyle = .medium
@@ -34,16 +31,10 @@ final class ChatViewController: MessagesViewController {
     public var realDataBase: RealmDataBase?
     public var xmppManager: XMPPManager?
 
-    public var messages = [MessageType]() {
-        didSet {
-            listenForMessages(roomId: self.roomId, shouldScrollToBottom: true)
-        }
-    }
+    public lazy var messageList: [MessageType] = []
 
     private var selfSender: Sender? {
-        return Sender(photoURL: "",
-                      senderId: self.senderId,
-                      displayName: "Me")
+        return Sender(photoURL: "", senderId: self.senderId, displayName: self.senderId)
     }
 
     init(senderEmail: String, roomId: String, receiverEmail: String) {
@@ -67,6 +58,31 @@ final class ChatViewController: MessagesViewController {
         messagesCollectionView.messageCellDelegate = self
         messageInputBar.delegate = self
         setupInputButton()
+        listenForMessages(roomId: self.roomId, shouldScrollToBottom: true)
+    }
+    
+    func insertMessage(_ message: MessageType) {
+        messageList.append(message)
+        // Reload last section to update header/footer labels and insert a new one
+        messagesCollectionView.performBatchUpdates({
+            messagesCollectionView.insertSections([messageList.count - 1])
+            if messageList.count >= 2 {
+                messagesCollectionView.reloadSections([messageList.count - 2])
+            }
+        }, completion: { [weak self] _ in
+            if self?.isLastSectionVisible() == true {
+                self?.messagesCollectionView.scrollToLastItem(animated: true)
+            }
+        })
+    }
+    
+    func isLastSectionVisible() -> Bool {
+        
+        guard !messageList.isEmpty else { return false }
+        
+        let lastIndexPath = IndexPath(item: 0, section: messageList.count - 1)
+        
+        return messagesCollectionView.indexPathsForVisibleItems.contains(lastIndexPath)
     }
 
     private func setupInputButton() {
@@ -164,7 +180,7 @@ final class ChatViewController: MessagesViewController {
     private func listenForMessages(roomId: String, shouldScrollToBottom: Bool) {
         let realmDataBase = RealmDataBase(senderEmail: self.senderId, receiverEmail: self.receiverId, roomId: self.roomId)
         let messages = Array(realmDataBase.currentRoom.messages)
-        self.messages = messages
+        self.messageList = messages
         DispatchQueue.main.async {
             self.messagesCollectionView.reloadDataAndKeepOffset()
             if shouldScrollToBottom {
@@ -297,12 +313,33 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
             return
         }
         // Send Message
-        let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderId: self.senderId, receiverId: self.receiverId)
-        xmppManager?.sendMessage(message: newMessage)
-        self.realDataBase?.currentMessage.append(newMessage)
-        self.listenForMessages(roomId: self.roomId, shouldScrollToBottom: true)
-        self.messageInputBar.inputTextView.text = nil
+        inputBar.inputTextView.resignFirstResponder()
+        DispatchQueue.global(qos: .default).async {
+            DispatchQueue.main.async { [weak self] in
+                let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderId: self?.senderId, receiverId: self?.receiverId)
+                self?.xmppManager?.sendMessage(message: newMessage)
+                self?.realDataBase?.currentMessage.append(newMessage)
+                self?.insertMessage(newMessage)
+                //self?.listenForMessages(roomId: self!.roomId, shouldScrollToBottom: true)
+                self?.messageInputBar.inputTextView.text = nil
+                self?.messagesCollectionView.scrollToLastItem(animated: true)
+            }
+        }
     }
+    
+//    private func insertMessages(_ data: [Any]) {
+//        for component in data {
+//            let user = self.currentSender
+//            if let str = component as? String {
+//                let message = ChatMessage(messageBody: str, messageKind: .Text, timeStamp: Date(), senderId: user().senderId, receiverId: self.receiverId)
+//                insertMessage(message)
+//            } else if let _ = component as? UIImage {
+//                let url = "String(URL)"
+//                let message = ChatMessage(messageBody: url, messageKind: .Photo, timeStamp: Date(), senderId: user().senderId, receiverId: self.receiverId)
+//                insertMessage(message)
+//            }
+//        }
+//    }
 }
 
 extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
@@ -310,16 +347,15 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
         if let sender = selfSender {
             return sender
         }
-
-        fatalError("Self Sender is nil, email should be cached")
+        fatalError("Self Sender is nil")
     }
 
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
-        return messages[indexPath.section]
+        return messageList[indexPath.section]
     }
 
     func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
-        return messages.count
+        return messageList.count
     }
 
     func configureMediaMessageImageView(_ imageView: UIImageView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
@@ -427,7 +463,7 @@ extension ChatViewController: MessageCellDelegate {
             return
         }
 
-        let message = messages[indexPath.section]
+        let message = messageList[indexPath.section]
 
         switch message.kind {
         
@@ -441,7 +477,7 @@ extension ChatViewController: MessageCellDelegate {
             return
         }
 
-        let message = messages[indexPath.section]
+        let message = messageList[indexPath.section]
 
         switch message.kind {
         case .photo(let media):
