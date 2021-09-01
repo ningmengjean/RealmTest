@@ -385,18 +385,18 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
         }
     }
 
-//    func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
-//
-//        let sender = message.sender
-//
-//        if sender.senderId == selfSender?.senderId {
-//            // show our image
-//            if let currentUserImageURL = self.senderPhotoURL {
-//                avatarView.kf.setImage(with: currentUserImageURL)
-//            }
-//            else {
-//                // images/safeemail_profile_picture.png
-//
+    func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
+
+        let sender = message.sender
+
+        if sender.senderId == selfSender?.senderId {
+            // show our image
+            if let currentUserImageURL = URL(string: "https://cdn.arstechnica.net/wp-content/uploads/2018/06/macOS-Mojave-Dynamic-Wallpaper-transition.jpg") {
+                avatarView.kf.setImage(with: currentUserImageURL)
+            }
+            else {
+                // images/safeemail_profile_picture.png
+
 //                guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
 //                    return
 //                }
@@ -416,14 +416,14 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
 //                        print("\(error)")
 //                    }
 //                })
-//            }
-//        }
-//        else {
-//            // other user image
-//            if let otherUsrePHotoURL = self.otherUserPhotoURL {
-//                avatarView.kf.setImage(with: otherUsrePHotoURL)
-//            }
-//            else {
+            }
+        }
+        else {
+            // other user image
+            if let otherUsrePHotoURL = URL(string: "https://pixabay.com/photos/sunset-tree-water-silhouette-1373171/") {
+                avatarView.kf.setImage(with: otherUsrePHotoURL)
+            }
+            else {
 //                // fetch url
 //                let email = self.receiverId
 //
@@ -442,10 +442,10 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
 //                        print("\(error)")
 //                    }
 //                })
-//            }
-//        }
-//
-//    }
+            }
+        }
+
+    }
 }
 
 extension ChatViewController: MessageCellDelegate {
