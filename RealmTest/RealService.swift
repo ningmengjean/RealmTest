@@ -34,7 +34,7 @@ class RealmService: NSObject {
     var realm: Realm!
     func saveObject<T: Object>(_ object: T) {
         do {
-            try realm.write {
+            try realm.safeWrite {
                 realm.add(object, update: .modified)
             }
         } catch {
@@ -44,7 +44,7 @@ class RealmService: NSObject {
     // Realm need use to change anything in write transaction, or it will crash
     func update<T: Object>(_ changing: @escaping ()->T) {
         do {
-            try realm.write {
+            try realm.safeWrite {
                 realm.add(changing(), update: .all)
             }
         } catch {
@@ -54,7 +54,7 @@ class RealmService: NSObject {
     
     func delete<T: Object>(_ object: T) {
         do {
-            try realm.write {
+            try realm.safeWrite {
                 realm.delete(object)
             }
         } catch {
@@ -92,5 +92,15 @@ extension Results {
             }
         }
         return array
+    }
+}
+
+extension Realm {
+    public func safeWrite(_ block: (() throws -> Void)) throws {
+        if isInWriteTransaction {
+            try block()
+        } else {
+            try write(block)
+        }
     }
 }

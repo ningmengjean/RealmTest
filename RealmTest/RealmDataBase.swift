@@ -16,6 +16,7 @@ class RealmDataBase: NSObject {
     var senderId: String
     var receiverEmail: String
     var receiverId: String
+    
     init(senderEmail: String, receiverEmail: String, roomId: String) {
         self.senderEmail = senderEmail
         self.senderId = String(senderEmail.split(separator: "@")[0])
@@ -25,13 +26,11 @@ class RealmDataBase: NSObject {
     }
     
     let maxCacheMessagesCount = 10
-    
     var currentMessage = [ChatMessage]() {
         didSet {
             handleCurrentMessageChange()
         }
     }
-    
     var currentRoom: MessageRoom {
         let rooms = realmService.object(MessageRoom.self)
         let targetRoom = rooms?.filter("roomId = %@", self.roomId).first
@@ -48,9 +47,14 @@ class RealmDataBase: NSObject {
         }
         flushMessages()
     }
-    private func flushMessages() {
-        currentRoom.messages.append(objectsIn: currentMessage)
-        realmService.saveObject(currentRoom)
+    
+    public func flushMessages() {
+        realmService.update {
+            for message in self.currentMessage {
+                self.currentRoom.messages.append(message)
+            }
+            return self.currentRoom
+        }
         currentMessage.removeAll()
     }
     

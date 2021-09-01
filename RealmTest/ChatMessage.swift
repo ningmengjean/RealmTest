@@ -19,7 +19,7 @@ enum Message_Kind: String, PersistableEnum {
 }
 
 public class ChatMessage: Object {
-    @Persisted var _id = UUID().uuidString
+    @Persisted (primaryKey: true) var id = UUID().uuidString
     @Persisted var messageBody = ""
     @Persisted var messageKind = Message_Kind.Text
     @Persisted var timeStamp = Date()
@@ -27,7 +27,7 @@ public class ChatMessage: Object {
     @Persisted var receiverId: String?
   
     public override static func primaryKey() -> String? {
-           return "_id"
+           return "id"
     }
     
     convenience init(messageBody: String, messageKind: Message_Kind, timeStamp: Date, senderId: String?, receiverId: String?) {
@@ -46,7 +46,7 @@ extension ChatMessage: MessageType {
     }
     
     public var messageId: String {
-        return _id
+        return id
     }
     
     public var sentDate: Date {

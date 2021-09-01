@@ -16,7 +16,7 @@ import CoreLocation
 import XMPPFramework
   
 public  protocol ChatViewControllerDelegate: AnyObject {
-    func insertMessage(_ message: MessageType)
+    func insertMessage(_ message: ChatMessage)
 }
 
 final class ChatViewController: MessagesViewController, ChatViewControllerDelegate {
@@ -36,7 +36,7 @@ final class ChatViewController: MessagesViewController, ChatViewControllerDelega
     public var realmDataBase: RealmDataBase
     public var xmppManager: XMPPManager?
 
-    public lazy var messageList: [MessageType] = []
+    public lazy var messageList: [ChatMessage] = []
 
     private var selfSender: Sender? {
         return Sender(photoURL: "", senderId: self.senderId, displayName: self.senderId)
@@ -64,10 +64,20 @@ final class ChatViewController: MessagesViewController, ChatViewControllerDelega
         messagesCollectionView.messageCellDelegate = self
         messageInputBar.delegate = self
         setupInputButton()
-        listenForMessages(roomId: self.roomId, shouldScrollToBottom: true)
+        listenForMessages(roomId: roomId, shouldScrollToBottom: true)
     }
     
-    func insertMessage(_ message: MessageType) {
+    private func listenForMessages(roomId: String, shouldScrollToBottom: Bool) {
+        self.messageList = realmDataBase.getAllMessagesForSpeficMessageRoom(roomId: roomId)
+        DispatchQueue.main.async {
+            self.messagesCollectionView.reloadDataAndKeepOffset()
+            if shouldScrollToBottom {
+                self.messagesCollectionView.scrollToLastItem()
+            }
+        }
+    }
+    
+    func insertMessage(_ message: ChatMessage) {
         messageList.append(message)
         // Reload last section to update header/footer labels and insert a new one
         messagesCollectionView.performBatchUpdates({
@@ -80,14 +90,12 @@ final class ChatViewController: MessagesViewController, ChatViewControllerDelega
                 self?.messagesCollectionView.scrollToLastItem(animated: true)
             }
         })
+        self.realmDataBase.currentMessage.append(message)
     }
     
     func isLastSectionVisible() -> Bool {
-        
         guard !messageList.isEmpty else { return false }
-        
         let lastIndexPath = IndexPath(item: 0, section: messageList.count - 1)
-        
         return messagesCollectionView.indexPathsForVisibleItems.contains(lastIndexPath)
     }
 
@@ -182,20 +190,16 @@ final class ChatViewController: MessagesViewController, ChatViewControllerDelega
         present(actionSheet, animated: true)
     }
 
-    private func listenForMessages(roomId: String, shouldScrollToBottom: Bool) {
-        self.messageList = realmDataBase.getAllMessagesForSpeficMessageRoom(roomId: roomId)
-        DispatchQueue.main.async {
-            self.messagesCollectionView.reloadDataAndKeepOffset()
-            if shouldScrollToBottom {
-                self.messagesCollectionView.scrollToLastItem()
-            }
-        }
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         messageInputBar.inputTextView.becomeFirstResponder()
-        listenForMessages(roomId: roomId, shouldScrollToBottom: true)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if self.realmDataBase.currentMessage.count < 10 {
+            self.realmDataBase.flushMessages()
+        }
     }
 }
 
@@ -321,7 +325,6 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
             DispatchQueue.main.async { [weak self] in
                 let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderId: self?.senderId, receiverId: self?.receiverId)
                 self?.xmppManager?.sendMessage(message: newMessage)
-                self?.realmDataBase.currentMessage.append(newMessage)
                 self?.insertMessage(newMessage)
                 self?.messageInputBar.inputTextView.text = nil
                 self?.messagesCollectionView.scrollToLastItem(animated: true)
