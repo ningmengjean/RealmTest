@@ -14,6 +14,7 @@ import AVKit
 import Kingfisher
 import CoreLocation
 import XMPPFramework
+import MobileCoreServices
   
 public  protocol ChatViewControllerDelegate: AnyObject {
     func insertMessage(_ message: ChatMessage)
@@ -128,6 +129,9 @@ final class ChatViewController: MessagesViewController, ChatViewControllerDelega
         actionSheet.addAction(UIAlertAction(title: "Audio", style: .default, handler: {  _ in
 
         }))
+        actionSheet.addAction(UIAlertAction(title: "File", style: .default, handler: { [weak self] _ in
+            self?.presentFileInputActionsheet()
+        }))
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 
         present(actionSheet, animated: true)
@@ -186,6 +190,19 @@ final class ChatViewController: MessagesViewController, ChatViewControllerDelega
             self?.present(picker, animated: true)
         }))
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+    }
+    
+    private func presentFileInputActionsheet() {
+        let actionSheet = UIAlertController(title: "Attach File",
+                                            message: "Where would you like to attach a file from?",
+                                            preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "Files", style: .default, handler: { [weak self] _ in
+
+            let picker = UIDocumentPickerViewController(documentTypes: [String(kUTTypePDF), String(kUTTypeImage), String(kUTTypeMovie), String(kUTTypeVideo), String(kUTTypePlainText), String(kUTTypeMP3)], in: .import)
+            picker.delegate = self
+            self?.present(picker, animated: true)
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 
         present(actionSheet, animated: true)
     }
@@ -201,12 +218,36 @@ final class ChatViewController: MessagesViewController, ChatViewControllerDelega
             self.realmDataBase.flushMessages()
         }
     }
+    
+    func sendImageMessage(image: UIImage)  {
+        //let photoMessage = MockMessage(image: photo, user: self.currentSender() as! MockUser, messageId: UUID().uuidString, date: Date())
+        //self.insertMessage(photoMessage)
+        let message = ChatMessage()
+    }
+}
+  
+extension ChatViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        controller.dismiss(animated: true, completion: nil)
+    }
+    
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        controller.dismiss(animated: true, completion: nil)
+    }
 }
 
 extension ChatViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true, completion: nil)
+        if let image = info[.editedImage] as? UIImage, let imageData = image.pngData() {
+            //Upload imageData to Server, return a url
+            //sendImageMessage(photoURL: "", image: image)
+        }
     }
 
 //    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -323,7 +364,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
         inputBar.inputTextView.resignFirstResponder()
         DispatchQueue.global(qos: .default).async {
             DispatchQueue.main.async { [weak self] in
-                let newMessage = ChatMessage(messageBody: text, messageKind: .Text, timeStamp: Date(), senderId: self?.senderId, receiverId: self?.receiverId)
+                let newMessage = ChatMessage(messageBody: text, message_Kind: .Text, timeStamp: Date(), senderId: self?.senderId, receiverId: self?.receiverId)
                 self?.xmppManager?.sendMessage(message: newMessage)
                 self?.insertMessage(newMessage)
                 self?.messageInputBar.inputTextView.text = nil
@@ -490,3 +531,26 @@ extension ChatViewController: MessageCellDelegate {
         }
     }
 }
+
+//  extension ChatViewController: CameraInputBarAccessoryViewDelegate {
+//
+//    func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith attachments: [AttachmentManager.Attachment]) {
+//
+//
+//        for item in attachments {
+//            if  case .image(let image) = item {
+//
+//                self.sendImageMessage(photo: image)
+//            }
+//        }
+//        inputBar.invalidatePlugins()
+//    }
+//
+//
+//    func sendImageMessage( photo  : UIImage)  {
+//
+//        let photoMessage = MockMessage(image: photo, user: self.currentSender() as! MockUser, messageId: UUID().uuidString, date: Date())
+//        self.insertMessage(photoMessage)
+//    }
+//
+//}

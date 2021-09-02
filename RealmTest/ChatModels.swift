@@ -61,3 +61,5 @@ struct Location: LocationItem {
     var location: CLLocation
     var size: CGSize
 }
+
+

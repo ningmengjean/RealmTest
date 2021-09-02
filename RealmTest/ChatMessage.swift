@@ -21,7 +21,7 @@ enum Message_Kind: String, PersistableEnum {
 public class ChatMessage: Object {
     @Persisted (primaryKey: true) var id = UUID().uuidString
     @Persisted var messageBody = ""
-    @Persisted var messageKind = Message_Kind.Text
+    @Persisted var message_Kind = Message_Kind.Text
     @Persisted var timeStamp = Date()
     @Persisted var senderId: String?
     @Persisted var receiverId: String?
@@ -30,10 +30,10 @@ public class ChatMessage: Object {
            return "id"
     }
     
-    convenience init(messageBody: String, messageKind: Message_Kind, timeStamp: Date, senderId: String?, receiverId: String?) {
+    convenience init(messageBody: String, message_Kind: Message_Kind, timeStamp: Date, senderId: String?, receiverId: String?) {
         self.init()
         self.messageBody = messageBody
-        self.messageKind = messageKind
+        self.message_Kind = message_Kind
         self.timeStamp = timeStamp
         self.senderId = senderId
         self.receiverId = receiverId
@@ -54,7 +54,7 @@ extension ChatMessage: MessageType {
     }
     
     public var kind: MessageKind {
-        switch messageKind {
+        switch message_Kind {
         case .Text:
             return .text(messageBody)
         case .File:

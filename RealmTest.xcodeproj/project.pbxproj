@@ -23,7 +23,6 @@
 		C012921626C66354003015A0 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012920F26C66354003015A0 /* ChatViewController.swift */; };
 		C012921726C66354003015A0 /* ConversationsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921026C66354003015A0 /* ConversationsModels.swift */; };
 		C012921826C66354003015A0 /* ChatModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921126C66354003015A0 /* ChatModels.swift */; };
-		C012921926C66354003015A0 /* MockMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921226C66354003015A0 /* MockMessages.swift */; };
 		C012921A26C66354003015A0 /* PhotoViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921326C66354003015A0 /* PhotoViewerViewController.swift */; };
 		C012921B26C66354003015A0 /* XMPPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012921426C66354003015A0 /* XMPPManager.swift */; };
 		C03C353126CA32C100177866 /* RealmDataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03C353026CA32C100177866 /* RealmDataBase.swift */; };
@@ -50,7 +49,6 @@
 		C012920F26C66354003015A0 /* ChatViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		C012921026C66354003015A0 /* ConversationsModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationsModels.swift; sourceTree = "<group>"; };
 		C012921126C66354003015A0 /* ChatModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatModels.swift; sourceTree = "<group>"; };
-		C012921226C66354003015A0 /* MockMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockMessages.swift; sourceTree = "<group>"; };
 		C012921326C66354003015A0 /* PhotoViewerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewerViewController.swift; sourceTree = "<group>"; };
 		C012921426C66354003015A0 /* XMPPManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XMPPManager.swift; sourceTree = "<group>"; };
 		C03C353026CA32C100177866 /* RealmDataBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmDataBase.swift; sourceTree = "<group>"; };
@@ -103,7 +101,6 @@
 				C012921126C66354003015A0 /* ChatModels.swift */,
 				C012920F26C66354003015A0 /* ChatViewController.swift */,
 				C012921026C66354003015A0 /* ConversationsModels.swift */,
-				C012921226C66354003015A0 /* MockMessages.swift */,
 				C012921326C66354003015A0 /* PhotoViewerViewController.swift */,
 				C012920E26C66354003015A0 /* RealService.swift */,
 				C03C353026CA32C100177866 /* RealmDataBase.swift */,
@@ -252,7 +249,6 @@
 				C012689226CB6B1F00846918 /* ChatModule.swift in Sources */,
 				C012921826C66354003015A0 /* ChatModels.swift in Sources */,
 				C03C353126CA32C100177866 /* RealmDataBase.swift in Sources */,
-				C012921926C66354003015A0 /* MockMessages.swift in Sources */,
 				C012921526C66354003015A0 /* RealService.swift in Sources */,
 				C012921626C66354003015A0 /* ChatViewController.swift in Sources */,
 				C012921A26C66354003015A0 /* PhotoViewerViewController.swift in Sources */,
