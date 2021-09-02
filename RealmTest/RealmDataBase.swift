@@ -83,7 +83,7 @@ class RealmDataBase: NSObject {
 extension RealmDataBase: XMPPDelegate {
     public func receivedMessage(message: XMPPMessage) {
         guard let messageBody = message.body else { return }
-        let message = ChatMessage(messageBody: messageBody, message_Kind: .Text, timeStamp: Date(),senderId: message.fromStr, receiverId: message.toStr)
+        let message = ChatMessage(messageBody: messageBody, message_Kind: .Text, timeStamp: Date(),senderId: message.fromStr, receiverId: message.toStr, id: UUID().uuidString)
         self.currentMessage.append(message)
     }
 }

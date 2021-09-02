@@ -222,7 +222,9 @@ final class ChatViewController: MessagesViewController, ChatViewControllerDelega
     func sendImageMessage(image: UIImage)  {
         //let photoMessage = MockMessage(image: photo, user: self.currentSender() as! MockUser, messageId: UUID().uuidString, date: Date())
         //self.insertMessage(photoMessage)
-        let message = ChatMessage()
+        let message = ChatMessage(messageBody: "", message_Kind: .Photo, timeStamp: Date(), senderId: self.senderId, receiverId: self.receiverId, id: UUID().uuidString)
+        self.xmppManager?.sendMessage(message: message)
+        self.insertMessage(message)
     }
 }
   
@@ -364,7 +366,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
         inputBar.inputTextView.resignFirstResponder()
         DispatchQueue.global(qos: .default).async {
             DispatchQueue.main.async { [weak self] in
-                let newMessage = ChatMessage(messageBody: text, message_Kind: .Text, timeStamp: Date(), senderId: self?.senderId, receiverId: self?.receiverId)
+                let newMessage = ChatMessage(messageBody: text, message_Kind: .Text, timeStamp: Date(), senderId: self?.senderId, receiverId: self?.receiverId, id: UUID().uuidString)
                 self?.xmppManager?.sendMessage(message: newMessage)
                 self?.insertMessage(newMessage)
                 self?.messageInputBar.inputTextView.text = nil

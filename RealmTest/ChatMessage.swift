@@ -30,13 +30,14 @@ public class ChatMessage: Object {
            return "id"
     }
     
-    convenience init(messageBody: String, message_Kind: Message_Kind, timeStamp: Date, senderId: String?, receiverId: String?) {
+    convenience init(messageBody: String, message_Kind: Message_Kind, timeStamp: Date, senderId: String?, receiverId: String?, id: String) {
         self.init()
         self.messageBody = messageBody
         self.message_Kind = message_Kind
         self.timeStamp = timeStamp
         self.senderId = senderId
         self.receiverId = receiverId
+        self.id = id
     }
 }
 

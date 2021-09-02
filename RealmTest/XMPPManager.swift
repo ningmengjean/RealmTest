@@ -76,7 +76,7 @@ extension XMPPManager: XMPPStreamDelegate {
     public func xmppStream(_ sender: XMPPStream, didReceive message: XMPPMessage) {
         print(message)
         delegate?.receivedMessage(message: message)
-        let chatMessage = ChatMessage(messageBody: message.body ?? "", message_Kind: .Text, timeStamp: Date(), senderId: message.fromStr, receiverId: message.toStr)
+        let chatMessage = ChatMessage(messageBody: message.body ?? "", message_Kind: .Text, timeStamp: Date(), senderId: message.fromStr, receiverId: message.toStr, id: UUID().uuidString)
         chatDelegate?.insertMessage(chatMessage)
     }
     
