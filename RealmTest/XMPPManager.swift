@@ -89,3 +89,15 @@ extension XMPPManager: XMPPStreamDelegate {
         print("Stream: Authenticated")
     }
 }
+
+extension XMPPManager: XMPPDelayedDeliveryDelegate {
+    public func xmppDelayedDelivery(_ sender: XMPPDelayedDelivery, didReceive message: XMPPMessage) {
+        print("delay message:",message)
+        
+    }
+    
+    public func xmppDelayedDelivery(_ sender: XMPPDelayedDelivery, didReceive presence: XMPPPresence) {
+        
+    }
+}
+
