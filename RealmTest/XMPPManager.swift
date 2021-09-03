@@ -23,6 +23,8 @@ public class XMPPManager: NSObject {
     public let userJID: XMPPJID
     public let hostPort: UInt16
     public let password: String
+    public var xmppStreamManagement: XMPPStreamManagement
+    public let xmppModule: XMPPModule
     public weak var delegate: XMPPDelegate?
     public weak var chatDelegate: ChatViewControllerDelegate?
 
@@ -41,9 +43,16 @@ public class XMPPManager: NSObject {
         self.xmppStream.hostPort = hostPort
         self.xmppStream.startTLSPolicy = XMPPStreamStartTLSPolicy.allowed
         self.xmppStream.myJID = userJID
+        
+        // XMPPStreamManagement
+        let xmppSMMS = XMPPStreamManagementMemoryStorage()
+        xmppStreamManagement = XMPPStreamManagement(storage: xmppSMMS, dispatchQueue: DispatchQueue.global())
+        
+        self.xmppModule = XMPPModule(dispatchQueue: DispatchQueue.global())
         super.init()
-
         self.xmppStream.addDelegate(self, delegateQueue: DispatchQueue.main)
+        self.xmppStreamManagement.addDelegate(self, delegateQueue: DispatchQueue.main)
+        self.xmppModule.addDelegate(self, delegateQueue: DispatchQueue.main)
     }
 
     public func connect() {
@@ -52,6 +61,19 @@ public class XMPPManager: NSObject {
         }
         try! self.xmppStream.connect(withTimeout: XMPPStreamTimeoutNone)
         print(self.xmppStream.isConnected)
+    }
+    
+    // Stream Management
+    private func configureStreamManagement() {
+        xmppStreamManagement.activate(xmppStream)
+          xmppStreamManagement.autoResume = true
+          xmppStreamManagement.ackResponseDelay = 0.2
+          xmppStreamManagement.requestAck()
+          xmppStreamManagement.automaticallyRequestAcks(afterStanzaCount: 1, orTimeout: 10)
+          xmppStreamManagement.automaticallySendAcks(afterStanzaCount: 1, orTimeout: 10)
+          xmppStreamManagement.enable(withResumption: true, maxTimeout: 0)
+          xmppStreamManagement.sendAck()
+          xmppStream.register(xmppStreamManagement)
     }
     
     public func sendMessage(message: ChatMessage) {
@@ -86,18 +108,29 @@ extension XMPPManager: XMPPStreamDelegate {
     
     public func xmppStreamDidAuthenticate(_ sender: XMPPStream) {
         self.xmppStream.send(XMPPPresence())
+        configureStreamManagement()
         print("Stream: Authenticated")
     }
 }
 
+extension XMPPManager: XMPPStreamManagementDelegate {
+    public func xmppStreamManagement(_ sender: XMPPStreamManagement, didReceiveAckForStanzaIds stanzaIds: [Any]) {
+        if let messageIds = stanzaIds as? [String] {
+            for id in messageIds {
+              print("Message is delivered to xmpp server: \(id)")
+            }
+          }
+    }
+}
+
 extension XMPPManager: XMPPDelayedDeliveryDelegate {
-    public func xmppDelayedDelivery(_ sender: XMPPDelayedDelivery, didReceive message: XMPPMessage) {
-        print("delay message:",message)
-        
+    public func xmppDelayedDelivery(_ xmppDelayedDelivery: XMPPDelayedDelivery, didReceiveDelayedMessage delayedMessage: XMPPMessage) {
+        print(delayedMessage)
     }
     
-    public func xmppDelayedDelivery(_ sender: XMPPDelayedDelivery, didReceive presence: XMPPPresence) {
-        
+    public func xmppDelayedDelivery(_ xmppDelayedDelivery: XMPPDelayedDelivery, didReceiveDelayedPresence delayedPresence: XMPPPresence) {
+        print(delayedPresence)
     }
+    
 }
 
