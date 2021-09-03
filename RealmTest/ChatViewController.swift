@@ -249,6 +249,7 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
         if let image = info[.editedImage] as? UIImage, let imageData = image.pngData() {
             //Upload imageData to Server, return a url
             //sendImageMessage(photoURL: "", image: image)
+            let message = PhotoMessage(url: <#T##URL?#>, image: image, placeholderImage: <#T##UIImage#>, size: <#T##CGSize#>)
         }
     }
 

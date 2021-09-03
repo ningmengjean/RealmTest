@@ -101,3 +101,14 @@ extension String: SenderType {
         return self
     }
 }
+
+struct PhotoMessage: MediaItem {
+    var url: URL?
+    
+    var image: UIImage?
+    
+    var placeholderImage: UIImage
+    
+    var size: CGSize
+    
+}
